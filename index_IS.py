@@ -1,9 +1,12 @@
 import avize_IS as depune_la_iasi
 
 
-id_lucrare = 1
+id_lucrare = 17
 
-path_final = r"G:\Shared drives\Root\11. DATABASE\Pentru CRISTI"
+path_final = r"G:\Shared drives\Root\11. DATABASE\Pentru Cosmin"
+
+
+
 
 # depune_la_iasi.aviz_APM(id_lucrare, path_final)
 
@@ -21,11 +24,11 @@ path_final = r"G:\Shared drives\Root\11. DATABASE\Pentru CRISTI"
 
 # depune_la_iasi.aviz_Salubris(id_lucrare, path_final)
 
-# ---------------------------------------------------   NU AM CERERE ptr AVIZ MANAGEMENT TRAFIC URBAN !!!
-
 # depune_la_iasi.aviz_PMI_Mediu(id_lucrare, path_final)
 
 # depune_la_iasi.aviz_PMI_SEn(id_lucrare, path_final)
+
+# depune_la_iasi.aviz_PMI_Trafic_Urban(id_lucrare, path_final)
 
 # depune_la_iasi.aviz_PMI_BSM(id_lucrare, path_final)
 
@@ -39,12 +42,14 @@ path_final = r"G:\Shared drives\Root\11. DATABASE\Pentru CRISTI"
 
 # depune_la_iasi.aviz_DSP(id_lucrare, path_final)
 
+depune_la_iasi.aviz_HCL(id_lucrare, path_final)
 
+# depune_la_iasi.aviz_Evidenta_Patrimoniu(id_lucrare, path_final)
 
-# depune_la_iasi.aviz_HCL(id_lucrare, path_final)
-
-depune_la_iasi.aviz_PMI_GiS(id_lucrare, path_final)
+# depune_la_iasi.aviz_PMI_GiS(id_lucrare, path_final)
 
 # depune_la_iasi.aviz_Nomenclatura(id_lucrare, path_final)
 
 # depune_la_iasi.aviz_OAR(id_lucrare, path_final)
+
+# depune_la_iasi.aviz_Cultura(id_lucrare, path_final)

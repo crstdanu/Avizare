@@ -13,7 +13,9 @@ from openpyxl.drawing.image import Image
 from dateutil.relativedelta import relativedelta
 import math
 
+
 pagina_goala = "G:/Shared drives/Root/11. DATABASE/01. Automatizari avize/DOCUMENTE/pagina_goala.pdf"
+
 
 def xlsx_to_pdf(excel_file):
     excel = win32.Dispatch('Excel.Application')
@@ -98,7 +100,7 @@ def get_Firma_executie(cursor, id_firma_executie):
         'nr_CI': fetch_single_value(cursor, 'SELECT NumarCI FROM tblAngajati WHERE IDAngajat = (SELECT IDReprezentant FROM tblFirmeExecutie WHERE IDFirma = ?)', (id_firma_executie,)),
         'data_CI': fetch_single_value(cursor, 'SELECT DataCI FROM tblAngajati WHERE IDAngajat = (SELECT IDReprezentant FROM tblFirmeExecutie WHERE IDFirma = ?)', (id_firma_executie,)),
         'cnp_repr': fetch_single_value(cursor, 'SELECT CNP FROM tblAngajati WHERE IDAngajat = (SELECT IDReprezentant FROM tblFirmeExecutie WHERE IDFirma = ?)', (id_firma_executie,)),
-        'caleCI': fetch_single_value(cursor, 'SELECT CaleCI FROM tblAngajati WHERE IDAngajat = (SELECT IDReprezentant FROM tblFirmeExecutie WHERE IDFirma = ?)', (id_firma_executie,)),
+        'CaleCI': fetch_single_value(cursor, 'SELECT CaleCI FROM tblAngajati WHERE IDAngajat = (SELECT IDReprezentant FROM tblFirmeExecutie WHERE IDFirma = ?)', (id_firma_executie,)),
         'CaleStampila': fetch_single_value(cursor, 'SELECT CaleStampila FROM tblFirmeExecutie WHERE IDFirma = ?', (id_firma_executie,)),
         'CaleCertificat': fetch_single_value(cursor, 'SELECT CaleCertificat FROM tblFirmeExecutie WHERE IDFirma = ?', (id_firma_executie,)),
     }
@@ -139,13 +141,14 @@ def get_CU(cursor, id_lucrare):
         'CalePlanSituatiePDF': fetch_single_value(cursor, 'SELECT CalePlanSituatiePDF FROM tblCU WHERE ID_Lucrare = ?', (id_lucrare,)),
         'CaleACCUConstructie': fetch_single_value(cursor, 'SELECT CaleACCUConstructie FROM tblCU WHERE ID_Lucrare = ?', (id_lucrare,)),
         'CaleExtraseCF': fetch_single_value(cursor, 'SELECT CaleExtraseCF FROM tblCU WHERE ID_Lucrare = ?', (id_lucrare,)),
+        'CaleAvizGiS': fetch_single_value(cursor, 'SELECT CaleAvizGiS FROM tblCU WHERE ID_Lucrare = ?', (id_lucrare,)),
         'CaleRidicareTopoDWG': fetch_single_value(cursor, 'SELECT CaleRidicareTopoDWG FROM tblCU WHERE ID_Lucrare = ?', (id_lucrare,)),
         'SuprafataOcupata': fetch_single_value(cursor, 'SELECT SuprafataOcupata FROM tblCU WHERE ID_Lucrare = ?', (id_lucrare,)),
         'LungimeTraseu': fetch_single_value(cursor, 'SELECT LungimeTraseu FROM tblCU WHERE ID_Lucrare = ?', (id_lucrare,)),
         'CaleATR': fetch_single_value(cursor, 'SELECT CaleATR FROM tblCU WHERE ID_Lucrare = ?', (id_lucrare,)),
         'CaleAvizCTE': fetch_single_value(cursor, 'SELECT CaleAvizCTE FROM tblCU WHERE ID_Lucrare = ?', (id_lucrare,)),
         'CaleChitantaDSP': fetch_single_value(cursor, 'SELECT CaleChitantaDSP FROM tblCU WHERE ID_Lucrare = ?', (id_lucrare,)),
-    
+
     }
 
 
@@ -185,30 +188,35 @@ def get_IncepereExecutie(cursor, id_lucrare):
         'CaleInstruireColectiva': fetch_single_value(cursor, 'SELECT CaleInstruireColectiva FROM tblIncepereExecutie WHERE ID_Lucrare = ?', (id_lucrare,)),
         'ContractExecutieDELGAZ': fetch_single_value(cursor, 'SELECT ContractExecutieDELGAZ FROM tblIncepereExecutie WHERE ID_Lucrare = ?', (id_lucrare,)),
         'CaleContractRacordare': fetch_single_value(cursor, 'SELECT CaleContractRacordare FROM tblIncepereExecutie WHERE ID_Lucrare = ?', (id_lucrare,)),
-        'CaleContractExecutie': fetch_single_value(cursor, 'SELECT CaleContractExecutie FROM tblIncepereExecutie WHERE ID_Lucrare = ?', (id_lucrare,)),    
-        'ID_DiriginteSantier': fetch_single_value(cursor, 'SELECT ID_DiriginteSantier FROM tblIncepereExecutie WHERE ID_Lucrare = ?', (id_lucrare,)),    
-        'ID_RTE': fetch_single_value(cursor, 'SELECT ID_RTE FROM tblIncepereExecutie WHERE ID_Lucrare = ?', (id_lucrare,)),    
-        'ID_RTEConstructii': fetch_single_value(cursor, 'SELECT ID_RTEConstructii FROM tblIncepereExecutie WHERE ID_Lucrare = ?', (id_lucrare,)),    
-        'ID_SSM': fetch_single_value(cursor, 'SELECT ID_SSM FROM tblIncepereExecutie WHERE ID_Lucrare = ?', (id_lucrare,)),    
-        'ID_ManagerProiect': fetch_single_value(cursor, 'SELECT ID_ManagerProiect FROM tblIncepereExecutie WHERE ID_Lucrare = ?', (id_lucrare,)),    
+        'CaleContractExecutie': fetch_single_value(cursor, 'SELECT CaleContractExecutie FROM tblIncepereExecutie WHERE ID_Lucrare = ?', (id_lucrare,)),
+        'ID_DiriginteSantier': fetch_single_value(cursor, 'SELECT ID_DiriginteSantier FROM tblIncepereExecutie WHERE ID_Lucrare = ?', (id_lucrare,)),
+        'ID_RTE': fetch_single_value(cursor, 'SELECT ID_RTE FROM tblIncepereExecutie WHERE ID_Lucrare = ?', (id_lucrare,)),
+        'ID_RTEConstructii': fetch_single_value(cursor, 'SELECT ID_RTEConstructii FROM tblIncepereExecutie WHERE ID_Lucrare = ?', (id_lucrare,)),
+        'ID_SSM': fetch_single_value(cursor, 'SELECT ID_SSM FROM tblIncepereExecutie WHERE ID_Lucrare = ?', (id_lucrare,)),
+        'ID_ManagerProiect': fetch_single_value(cursor, 'SELECT ID_ManagerProiect FROM tblIncepereExecutie WHERE ID_Lucrare = ?', (id_lucrare,)),
     }
 
 
 def get_Finalizare(cursor, id_lucrare):
     return {
         'ValoareReala': fetch_single_value(cursor, 'SELECT ValoareReala FROM tblFinalizare WHERE ID_Lucrare = ?', (id_lucrare,)),
+        'DataFinalizare': fetch_single_value(cursor, 'SELECT DataFinalizare FROM tblFinalizare WHERE ID_Lucrare = ?', (id_lucrare,)),
         'CaleImputernicireDelgaz': fetch_single_value(cursor, 'SELECT CaleImputernicireDelgaz FROM tblFinalizare WHERE ID_Lucrare = ?', (id_lucrare,)),
         'CaleAnuntIncepereUAT': fetch_single_value(cursor, 'SELECT CaleAnuntIncepereUAT FROM tblFinalizare WHERE ID_Lucrare = ?', (id_lucrare,)),
         'CaleDevizFinal': fetch_single_value(cursor, 'SELECT CaleDevizFinal FROM tblFinalizare WHERE ID_Lucrare = ?', (id_lucrare,)),
         'CaleFacturiRGT': fetch_single_value(cursor, 'SELECT CaleFacturiRGT FROM tblFinalizare WHERE ID_Lucrare = ?', (id_lucrare,)),
-        'CaleDovadaPlata': fetch_single_value(cursor, 'SELECT CaleDovadaPlata FROM tblFinalizare WHERE ID_Lucrare = ?', (id_lucrare,)),
+        'CaleDovadaPlataFacturi': fetch_single_value(cursor, 'SELECT CaleDovadaPlataFacturi FROM tblFinalizare WHERE ID_Lucrare = ?', (id_lucrare,)),
         'CaleReferatDS': fetch_single_value(cursor, 'SELECT CaleReferatDS FROM tblFinalizare WHERE ID_Lucrare = ?', (id_lucrare,)),
         'CaleRaportProiectant': fetch_single_value(cursor, 'SELECT CaleRaportProiectant FROM tblFinalizare WHERE ID_Lucrare = ?', (id_lucrare,)),
         'CaleITL': fetch_single_value(cursor, 'SELECT CaleITL FROM tblFinalizare WHERE ID_Lucrare = ?', (id_lucrare,)),
         'CaleAnuntFinalizareUAT': fetch_single_value(cursor, 'SELECT CaleAnuntFinalizareUAT FROM tblFinalizare WHERE ID_Lucrare = ?', (id_lucrare,)),
         'CaleDovadaRegularizareTaxaISC': fetch_single_value(cursor, 'SELECT CaleDovadaRegularizareTaxaISC FROM tblFinalizare WHERE ID_Lucrare = ?', (id_lucrare,)),
+        'CaleDovadaRegularizareTaxaAC': fetch_single_value(cursor, 'SELECT CaleDovadaRegularizareTaxaAC FROM tblFinalizare WHERE ID_Lucrare = ?', (id_lucrare,)),
+        'CaleAdeverintaISC': fetch_single_value(cursor, 'SELECT CaleAdeverintaISC FROM tblFinalizare WHERE ID_Lucrare = ?', (id_lucrare,)),
         'CaleDispozitieSantier': fetch_single_value(cursor, 'SELECT CaleDispozitieSantier FROM tblFinalizare WHERE ID_Lucrare = ?', (id_lucrare,)),
-            
+        'CalePlanIncadrareDS': fetch_single_value(cursor, 'SELECT CalePlanIncadrareDS FROM tblFinalizare WHERE ID_Lucrare = ?', (id_lucrare,)),
+        'CalePlanSituatieDS': fetch_single_value(cursor, 'SELECT CalePlanSituatieDS FROM tblFinalizare WHERE ID_Lucrare = ?', (id_lucrare,)),
+        'CaleRaspunsUatDS': fetch_single_value(cursor, 'SELECT CaleRaspunsUatDS FROM tblFinalizare WHERE ID_Lucrare = ?', (id_lucrare,)),
     }
 
 
@@ -318,7 +326,7 @@ def get_Lucrare(cursor, id_lucrare):
 
         # 'nr_cu': fetch_single_value(cursor, 'SELECT NumarCU FROM tblLucrari WHERE IDLucrare = ?', (id_lucrare,)),
         # 'data_cu': fetch_single_value(cursor, 'SELECT DataCU FROM tblLucrari WHERE IDLucrare = ?', (id_lucrare,)),
-        
+
         # 'IDIntocmit': fetch_single_value(cursor, 'SELECT IDIntocmit FROM tblLucrari WHERE IDLucrare = ?', (id_lucrare,)),
         # 'IDVerificat': fetch_single_value(cursor, 'SELECT IDVerificat FROM tblLucrari WHERE IDLucrare = ?', (id_lucrare,)),
         # 'facturare': fetch_single_value(cursor, 'SELECT FacturarePeClient FROM tblLucrari WHERE IDLucrare = ?', (id_lucrare,)),
@@ -352,7 +360,7 @@ def get_Executie(cursor, id_executie):
         'IDFirmaExecutie': fetch_single_value(cursor, 'SELECT IDFirmaExecutie FROM tblExecutie WHERE IDExecutie = ?', (id_executie,)),
         'IDClient': fetch_single_value(cursor, 'SELECT IDClient FROM tblExecutie WHERE IDExecutie = ?', (id_executie,)),
         'IDBeneficiar': fetch_single_value(cursor, 'SELECT IDBeneficiar FROM tblExecutie WHERE IDExecutie = ?', (id_executie,)),
-        'IDUAT': fetch_single_value(cursor, 'SELECT IDEmitentAC FROM tblExecutie WHERE IDExecutie = ?', (id_executie,)),        
+        'IDUAT': fetch_single_value(cursor, 'SELECT IDEmitentAC FROM tblExecutie WHERE IDExecutie = ?', (id_executie,)),
         'IDPersoanaContact': fetch_single_value(cursor, 'SELECT IDPersoanaContact FROM tblExecutie WHERE IDExecutie = ?', (id_executie,)),
 
         'numar_ac': fetch_single_value(cursor, 'SELECT NumarAC FROM tblExecutie WHERE IDExecutie = ?', (id_executie,)),
@@ -372,7 +380,7 @@ def get_Executie(cursor, id_executie):
         'dp_montare_stalpi': fetch_single_value(cursor, 'SELECT DPMontareStalpi FROM tblExecutie WHERE IDExecutie = ?', (id_executie,)),
         'dp_executie_foraj': fetch_single_value(cursor, 'SELECT DPExecutieForaj FROM tblExecutie WHERE IDExecutie = ?', (id_executie,)),
         'dp_montare_firide': fetch_single_value(cursor, 'SELECT DPMontareFiride FROM tblExecutie WHERE IDExecutie = ?', (id_executie,)),
-        'dp_stare_initiala': fetch_single_value(cursor, 'SELECT DPStareInitiala FROM tblExecutie WHERE IDExecutie = ?', (id_executie,)),        
+        'dp_stare_initiala': fetch_single_value(cursor, 'SELECT DPStareInitiala FROM tblExecutie WHERE IDExecutie = ?', (id_executie,)),
 
 
         'CaleACScanat': fetch_single_value(cursor, 'SELECT CaleACScanat FROM tblExecutie WHERE IDExecutie = ?', (id_executie,)),
@@ -466,13 +474,16 @@ def get_data(path_final, director_final, id_lucrare):
     tblCU = get_CU(cursor, id_lucrare)
     EmitentCU = get_EmitentCU(cursor, tblCU['EmitentCU'])
 
-    firma_proiectare = get_Firma_proiectare(cursor, lucrare['IDFirmaProiectare'])
+    firma_proiectare = get_Firma_proiectare(
+        cursor, lucrare['IDFirmaProiectare'])
     client = get_Client(cursor, lucrare['IDClient'])
     beneficiar = get_Beneficiar(cursor, lucrare['IDBeneficiar'])
     contact = get_Contact(cursor, lucrare['IDPersoanaContact'])
 
-    intocmit = fetch_single_value(cursor, 'SELECT Nume FROM tblAngajati WHERE IDAngajat = ?', (tblCU['IDIntocmit'],))
-    verificat = fetch_single_value(cursor, 'SELECT Nume FROM tblAngajati WHERE IDAngajat = ?', (tblCU['IDVerificat'],))
+    intocmit = fetch_single_value(
+        cursor, 'SELECT Nume FROM tblAngajati WHERE IDAngajat = ?', (tblCU['IDIntocmit'],))
+    verificat = fetch_single_value(
+        cursor, 'SELECT Nume FROM tblAngajati WHERE IDAngajat = ?', (tblCU['IDVerificat'],))
 
     return {
         'astazi': astazi,
@@ -495,7 +506,6 @@ def get_data_executie(path_final, director_final, id_lucrare):
     conn = get_db_connection()
     cursor = conn.cursor()
     astazi = get_today_date()
-    
 
     lucrare = get_Lucrare(cursor, id_lucrare)
     tblCU = get_CU(cursor, id_lucrare)
@@ -507,7 +517,7 @@ def get_data_executie(path_final, director_final, id_lucrare):
     firma_executie = get_Firma_executie(cursor, lucrare['IDFirmaExecutie'])
     client = get_Client(cursor, lucrare['IDClient'])
     beneficiar = get_Beneficiar(cursor, lucrare['IDBeneficiar'])
-    contact = get_Contact(cursor, lucrare['IDPersoanaContact']) 
+    contact = get_Contact(cursor, lucrare['IDPersoanaContact'])
 
     diriginte_santier = get_Diriginte_Santier(cursor, tblIncepereExecutie['ID_DiriginteSantier'])
     manager_proiect = get_Manager_Proiect(cursor, tblIncepereExecutie['ID_ManagerProiect'])
@@ -533,7 +543,7 @@ def get_data_executie(path_final, director_final, id_lucrare):
         'manager_proiect': manager_proiect,
         'diriginte_santier': diriginte_santier,
         'responsabil_ssm': responsabil_ssm,
-        
+
         'final_destination': final_destination,
         'contact': contact,
     }
@@ -545,7 +555,6 @@ def get_data_finalizare(path_final, director_final, id_lucrare):
     conn = get_db_connection()
     cursor = conn.cursor()
     astazi = get_today_date()
-    
 
     lucrare = get_Lucrare(cursor, id_lucrare)
     tblCU = get_CU(cursor, id_lucrare)
@@ -558,7 +567,7 @@ def get_data_finalizare(path_final, director_final, id_lucrare):
     firma_executie = get_Firma_executie(cursor, lucrare['IDFirmaExecutie'])
     client = get_Client(cursor, lucrare['IDClient'])
     beneficiar = get_Beneficiar(cursor, lucrare['IDBeneficiar'])
-    contact = get_Contact(cursor, lucrare['IDPersoanaContact']) 
+    contact = get_Contact(cursor, lucrare['IDPersoanaContact'])
 
     diriginte_santier = get_Diriginte_Santier(cursor, tblIncepereExecutie['ID_DiriginteSantier'])
     manager_proiect = get_Manager_Proiect(cursor, tblIncepereExecutie['ID_ManagerProiect'])
@@ -585,11 +594,10 @@ def get_data_finalizare(path_final, director_final, id_lucrare):
         'manager_proiect': manager_proiect,
         'diriginte_santier': diriginte_santier,
         'responsabil_ssm': responsabil_ssm,
-        
+
         'final_destination': final_destination,
         'contact': contact,
     }
-
 
 
 def facturare(id_lucrare):
@@ -597,17 +605,26 @@ def facturare(id_lucrare):
     cursor = conn.cursor()
     tblCU = get_CU(cursor, id_lucrare)
     lucrare = get_Lucrare(cursor, id_lucrare)
-    firma_proiectare = get_Firma_proiectare(cursor, lucrare['IDFirmaProiectare'])
+    firma_proiectare = get_Firma_proiectare(
+        cursor, lucrare['IDFirmaProiectare'])
     client = get_Client(cursor, lucrare['IDClient'])
     if tblCU['FacturarePeClient'] == False:
         return {
             'firma_facturare': firma_proiectare['nume'],
             'cui_firma_facturare': firma_proiectare['CUI'],
+            'nr_reg_com_facturare': firma_proiectare['NrRegCom'],
+            'localitate_facturare': firma_proiectare['localitate'],
+            'adresa_facturare': firma_proiectare['adresa'],
+            'judet_facturare': firma_proiectare['judet'],
         }
     else:
         return {
             'firma_facturare': client['nume'],
             'cui_firma_facturare': client['CUI'],
+            'nr_reg_com_facturare': client['NrRegCom'],
+            'localitate_facturare': client['localitate'],
+            'adresa_facturare': client['adresa'],
+            'judet_facturare': client['judet'],
         }
 
 
@@ -644,6 +661,7 @@ def count_pages_ISU(cerere_path, cu_path, plan_incadrare_path, plan_situatie_pat
         'acte_facturare': acte
     }
 
+
 def get_date(field_entry):
     if field_entry and isinstance(field_entry, str):
         date_str = field_entry
@@ -651,6 +669,7 @@ def get_date(field_entry):
     else:
         date_obj = field_entry
     return date_obj.strftime('%d-%m-%Y')
+
 
 def get_month(entry):
     luna = entry.month
@@ -679,19 +698,21 @@ def get_month(entry):
     if luna == 12:
         return "Decembrie"
 
+
 def get_year(entry):
     return entry.year
 
+
 def get_day(entry):
     return entry.day
-    
+
 
 def genereaza_grafic_executie(context, final_destination):
     wb = openpyxl.load_workbook(context['file_path'])
     ws = wb.active
 
     # Load the image file
-    
+
     img = Image(context['logo_path'])
     img.anchor = 'A1'
     # Add the image to the worksheet
@@ -702,7 +723,7 @@ def genereaza_grafic_executie(context, final_destination):
     desired_height_cm = 3.5
     desired_width_px = desired_width_cm * cm_to_pixels
     desired_height_px = desired_height_cm * cm_to_pixels
-    
+
     img2 = Image(context['stampila_path'])
     img2.anchor = 'D19'
     img2.width = desired_width_px
@@ -712,6 +733,7 @@ def genereaza_grafic_executie(context, final_destination):
 
     # adaugam emitentul AC
     vizat = f'VIZAT {context['emitent_ac']}'
+
     ws['D2'] = vizat.upper()
 
     ws['B5'] = f"{context['nume_lucrare']} din {context['localitate_lucrare']}, {context['adresa_lucrare']}, județ {context['judet_lucrare']}"
@@ -747,7 +769,8 @@ def genereaza_grafic_executie(context, final_destination):
     if context['sapare_sant']:
         lista_valori.append('SĂPARE MANUALĂ ȘANȚ - Domeniu PUBLIC')
     if context['pozare_cablu']:
-        lista_valori.append('POZARE CABLU ȘI ACOPERIRE ȘANȚ CU PĂMÂNT - Domeniu PUBLIC')
+        lista_valori.append(
+            'POZARE CABLU ȘI ACOPERIRE ȘANȚ CU PĂMÂNT - Domeniu PUBLIC')
     if context['montare_ptav']:
         lista_valori.append('MONTARE PTAv - Domeniu PUBLIC')
     if context['montare_stalpi']:
@@ -757,9 +780,11 @@ def genereaza_grafic_executie(context, final_destination):
     if context['montare_firide']:
         lista_valori.append('MONTARE FIRIDE - Domeniul PUBLIC')
     if context['aducere_stare_initiala']:
-        lista_valori.append('ADUCERE TEREN LA STAREA INIȚIALĂ - Domeniul PUBLIC')
+        lista_valori.append(
+            'ADUCERE TEREN LA STAREA INIȚIALĂ - Domeniul PUBLIC')
 
-    num_rows = len(lista_valori)  # Change this value to vary the number of rows
+    # Change this value to vary the number of rows
+    num_rows = len(lista_valori)
 
     # Ensure num_rows is between the minimum and maximum values
     # num_rows = max(min_rows, min(num_rows, max_rows))
@@ -777,12 +802,13 @@ def genereaza_grafic_executie(context, final_destination):
 
     # Number the rows in column A
     for i in range(num_rows):
-        ws[f"{col_A}{start_row + i}"] = i + 1  # Fill column A with row numbers from 1 to num_rows
-
+        # Fill column A with row numbers from 1 to num_rows
+        ws[f"{col_A}{start_row + i}"] = i + 1
 
     # Insert data into column B
     for i in range(num_rows):
-        ws[f"{col_B}{start_row + i}"] = lista_valori[i]  # Example data, change as needed
+        # Example data, change as needed
+        ws[f"{col_B}{start_row + i}"] = lista_valori[i]
 
     # Define a border style (thin borders for all sides)
     thin_border = Border(
@@ -797,16 +823,18 @@ def genereaza_grafic_executie(context, final_destination):
         for col in range(1, 2):  # Column A and B
             cell = ws.cell(row=row, column=col)
             cell.border = thin_border
-            cell.alignment = Alignment(horizontal='center', vertical='center', wrap_text=True)
+            cell.alignment = Alignment(
+                horizontal='center', vertical='center', wrap_text=True)
 
     for row in range(start_row, start_row + num_rows):
         for col in range(2, 3):  # Column A and B
             cell = ws.cell(row=row, column=col)
             cell.border = thin_border
-            cell.alignment = Alignment(horizontal='left', vertical='top', wrap_text=True)
+            cell.alignment = Alignment(
+                horizontal='left', vertical='top', wrap_text=True)
 
-
-    gray_fill = PatternFill(start_color="D3D3D3", end_color="D3D3D3", fill_type="solid")
+    gray_fill = PatternFill(start_color="D3D3D3",
+                            end_color="D3D3D3", fill_type="solid")
     for row in range(start_row, start_row + num_rows):
         for col in range(3, 5):  # Columns C (3) and D (4)
             cell = ws.cell(row=row, column=col)
@@ -814,10 +842,9 @@ def genereaza_grafic_executie(context, final_destination):
             cell.fill = gray_fill  # Apply the gray fill color
             cell.value = ""  # Leave the cell empty (no data)
 
-
     for row in range(start_row, 19):
         cell = ws.cell(row=row, column=1)  # Column A
-        
+
         # Check if the cell is truly empty or contains only invisible characters
         if cell.value is None or (isinstance(cell.value, str) and not cell.value.strip()):
             # If the row is empty (including spaces or invisible characters), set its height to 0
@@ -828,12 +855,13 @@ def genereaza_grafic_executie(context, final_destination):
     # Save the workbook
     wb.save(final_destination)
 
+
 def genereaza_grafic_executie_iasi(context, final_destination):
     wb = openpyxl.load_workbook(context['file_path'])
     ws = wb.active
 
     # Load the image file
-    
+
     img = Image(context['logo_path'])
     img.anchor = 'A1'
     # Add the image to the worksheet
@@ -844,7 +872,7 @@ def genereaza_grafic_executie_iasi(context, final_destination):
     desired_height_cm = 3.5
     desired_width_px = desired_width_cm * cm_to_pixels
     desired_height_px = desired_height_cm * cm_to_pixels
-    
+
     img2 = Image(context['stampila_path'])
     img2.anchor = 'E19'
     img2.width = desired_width_px
@@ -889,7 +917,8 @@ def genereaza_grafic_executie_iasi(context, final_destination):
     if context['sapare_sant']:
         lista_valori.append('SĂPARE MANUALĂ ȘANȚ - Domeniu PUBLIC')
     if context['pozare_cablu']:
-        lista_valori.append('POZARE CABLU ȘI ACOPERIRE ȘANȚ CU PĂMÂNT - Domeniu PUBLIC')
+        lista_valori.append(
+            'POZARE CABLU ȘI ACOPERIRE ȘANȚ CU PĂMÂNT - Domeniu PUBLIC')
     if context['montare_ptav']:
         lista_valori.append('MONTARE PTAv - Domeniu PUBLIC')
     if context['montare_stalpi']:
@@ -899,9 +928,11 @@ def genereaza_grafic_executie_iasi(context, final_destination):
     if context['montare_firide']:
         lista_valori.append('MONTARE FIRIDE - Domeniul PUBLIC')
     if context['aducere_stare_initiala']:
-        lista_valori.append('ADUCERE TEREN LA STAREA INIȚIALĂ - Domeniul PUBLIC')
+        lista_valori.append(
+            'ADUCERE TEREN LA STAREA INIȚIALĂ - Domeniul PUBLIC')
 
-    num_rows = len(lista_valori)  # Change this value to vary the number of rows
+    # Change this value to vary the number of rows
+    num_rows = len(lista_valori)
 
     # Ensure num_rows is between the minimum and maximum values
     # num_rows = max(min_rows, min(num_rows, max_rows))
@@ -919,12 +950,13 @@ def genereaza_grafic_executie_iasi(context, final_destination):
 
     # Number the rows in column A
     for i in range(num_rows):
-        ws[f"{col_A}{start_row + i}"] = i + 1  # Fill column A with row numbers from 1 to num_rows
-
+        # Fill column A with row numbers from 1 to num_rows
+        ws[f"{col_A}{start_row + i}"] = i + 1
 
     # Insert data into column B
     for i in range(num_rows):
-        ws[f"{col_B}{start_row + i}"] = lista_valori[i]  # Example data, change as needed
+        # Example data, change as needed
+        ws[f"{col_B}{start_row + i}"] = lista_valori[i]
 
     # Define a border style (thin borders for all sides)
     thin_border = Border(
@@ -939,16 +971,18 @@ def genereaza_grafic_executie_iasi(context, final_destination):
         for col in range(1, 2):  # Column A and B
             cell = ws.cell(row=row, column=col)
             cell.border = thin_border
-            cell.alignment = Alignment(horizontal='center', vertical='center', wrap_text=True)
+            cell.alignment = Alignment(
+                horizontal='center', vertical='center', wrap_text=True)
 
     for row in range(start_row, start_row + num_rows):
         for col in range(2, 3):  # Column A and B
             cell = ws.cell(row=row, column=col)
             cell.border = thin_border
-            cell.alignment = Alignment(horizontal='left', vertical='top', wrap_text=True)
+            cell.alignment = Alignment(
+                horizontal='left', vertical='top', wrap_text=True)
 
-
-    gray_fill = PatternFill(start_color="D3D3D3", end_color="D3D3D3", fill_type="solid")
+    gray_fill = PatternFill(start_color="D3D3D3",
+                            end_color="D3D3D3", fill_type="solid")
     for row in range(start_row, start_row + num_rows):
         for col in range(3, 5):  # Columns C (3) and D (4)
             cell = ws.cell(row=row, column=col)
@@ -956,10 +990,9 @@ def genereaza_grafic_executie_iasi(context, final_destination):
             cell.fill = gray_fill  # Apply the gray fill color
             cell.value = ""  # Leave the cell empty (no data)
 
-
     for row in range(start_row, 19):
         cell = ws.cell(row=row, column=1)  # Column A
-        
+
         # Check if the cell is truly empty or contains only invisible characters
         if cell.value is None or (isinstance(cell.value, str) and not cell.value.strip()):
             # If the row is empty (including spaces or invisible characters), set its height to 0
@@ -971,11 +1004,24 @@ def genereaza_grafic_executie_iasi(context, final_destination):
     wb.save(final_destination)
 
 
-
-def aduna_luni(date_obj, luni:int):
+def aduna_luni(date_obj, luni: int):
     new_date = date_obj + relativedelta(months=luni)
     formatted_date = new_date.strftime('%d-%m-%Y')
     return formatted_date
 
+
 def custom_round(value):
     return math.ceil(value) if value % 1 >= 0.5 else math.floor(value)
+
+def diferenta_taxa(taxa_ac, taxa_reala):
+    if taxa_ac >= taxa_reala:
+        diferenta_taxa = "-"
+    else:
+        diferenta_taxa = taxa_reala - taxa_ac
+
+    if isinstance(diferenta_taxa, str):
+        rezultat = diferenta_taxa
+    else:
+        rezultat = f"{diferenta_taxa:.2f}"
+
+    return rezultat

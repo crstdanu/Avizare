@@ -190,6 +190,9 @@ def aviz_EE_Delgaz(id_lucrare, path_final):
         y['tblCU']['CaleActeFacturare'].strip('"'),
     ]
 
+    if y['lucrare']['IDClient'] != 1:
+        pdf_list.insert(-1, y['tblCU']['CaleActeBeneficiar'].strip('"'))
+
     x.merge_pdfs(pdf_list, path_document_final)
 
     if os.path.exists(cerere_EE_pdf_path):
@@ -289,6 +292,9 @@ def aviz_GN_Delgaz(id_lucrare, path_final):
         y['tblCU']['CaleMemoriuTehnicSS'].strip('"'),
         y['tblCU']['CaleActeFacturare'].strip('"'),
     ]
+
+    if y['lucrare']['IDClient'] != 1:
+        pdf_list.insert(-1, y['tblCU']['CaleActeBeneficiar'].strip('"'))
 
     x.merge_pdfs(pdf_list, path_document_final)
 
@@ -1127,10 +1133,10 @@ def aviz_Cultura(id_lucrare, path_final):
         model_cerere, context_cerere, y['final_destination'], y['firma_proiectare']['CaleStampila'].strip('"'))
 
     path_document_final = os.path.join(
-        path_final, director_final, f"Documentatie aviz Culrura - {y['client']['nume']} conform CU {y['tblCU']['NrCU']} din {x.get_date(y['tblCU']['DataCU'])}.pdf")
+        path_final, director_final, f"Documentatie aviz Cultura - {y['client']['nume']} conform CU {y['tblCU']['NrCU']} din {x.get_date(y['tblCU']['DataCU'])}.pdf")
 
     path_document_printabil = os.path.join(
-        path_final, director_final, f"Documentatie aviz Culrura - DE PRINTAT.pdf")
+        path_final, director_final, f"Documentatie aviz Cultura - DE PRINTAT.pdf")
 
     pdf_list = [
         cerere_pdf_path,
@@ -1289,8 +1295,8 @@ def aviz_HCL(id_lucrare, path_final):
         'nr_cu': y['tblCU']['NrCU'],
         'data_cu': x.get_date(y['tblCU']['DataCU']),
         'emitent_cu': y['EmitentCU']['denumire_institutie'],
-        'suprafata_mp': y['lucrare']['SuprafataMP'],
-        'lungime_metri': y['lucrare']['LungimeTraseuMetri'],
+        'suprafata_mp': y['tblCU']['SuprafataOcupata'],
+        'lungime_metri': y['tblCU']['LungimeTraseu'],
         # Data
         'data': y['astazi'],
     }
@@ -1299,7 +1305,7 @@ def aviz_HCL(id_lucrare, path_final):
         model_cerere, context_cerere, y['final_destination'], y['firma_proiectare']['CaleStampila'].strip('"'))
 
     path_document_final = os.path.join(
-        path_final, director_final, f"Documentatie aviz HCL - DE PRINTAT.pdf")
+        path_final, director_final, f"Documentatie aviz HCL.pdf")
 
     pdf_list = [
 
@@ -1311,7 +1317,7 @@ def aviz_HCL(id_lucrare, path_final):
         y['tblCU']['CaleActeFacturare'].strip('"'),
         ]
 
-    with os.scandir(y['lucrare']['CaleExtraseCF'].strip('"')) as entries:
+    with os.scandir(y['tblCU']['CaleExtraseCF'].strip('"')) as entries:
         for entry in entries:
             if entry.is_file() and "Extras" in str(entry):
                 pdf_list.append(entry.path)
@@ -1524,3 +1530,276 @@ def aviz_OAR(id_lucrare, path_final):
     x.create_email(model_email, context_email, y['final_destination'])
 
     print("\nAvizul OAR - Neamț a fost creat \n")
+
+
+
+def aviz_Transelectrica(id_lucrare, path_final):
+    director_final = '13.Aviz Transelectrica'
+    y = x.get_data(path_final, director_final, id_lucrare)
+
+    # -----------------------------------------------------------------------------------------------
+
+    # creez CEREREA
+
+    model_cerere = (
+        'G:/Shared drives/Root/11. DATABASE/01. Automatizari avize/MODELE/NT/13.Aviz Transelectrica/'f"Cerere Transelectrica{' - DELGAZ' if y['lucrare']['IDClient'] == 1 else ''}.docx")
+
+    facturare = x.facturare(id_lucrare)
+
+    context_cerere = {
+        # proiectare
+        'nume_firma_proiectare': y['firma_proiectare']['nume'],
+        'localitate_firma_proiectare': y['firma_proiectare']['localitate'],
+        'adresa_firma_proiectare': y['firma_proiectare']['adresa'],
+        'judet_firma_proiectare': y['firma_proiectare']['judet'],
+        'email_firma_proiectare': y['firma_proiectare']['email'],
+        'cui_firma_proiectare': y['firma_proiectare']['CUI'],
+        'nr_reg_com': y['firma_proiectare']['NrRegCom'],
+        'reprezentant_firma_proiectare': y['firma_proiectare']['reprezentant'],
+        'seria_CI': y['firma_proiectare']['seria_CI'],
+        'nr_CI': y['firma_proiectare']['nr_CI'],
+        'cnp_repr': y['firma_proiectare']['cnp_repr'],
+        'persoana_contact': y['contact']['nume'],
+        'telefon_contact': y['contact']['telefon'],
+        # client
+        'nume_client': y['client']['nume'],
+
+        # beneficiar
+        'nume_beneficiar': y['beneficiar']['nume'],
+        # lucrare
+        'nume_lucrare': y['lucrare']['nume'],
+        'localitate_lucrare': y['lucrare']['localitate'],
+        'adresa_lucrare': y['lucrare']['adresa'],
+        'judet_lucrare': y['lucrare']['judet'],
+        # Data
+        'data': y['astazi'],
+        # Facturare
+        'firma_facturare': facturare['firma_facturare'],
+        'nr_reg_com_facturare': facturare['nr_reg_com_facturare'],
+        'cui_firma_facturare': facturare['cui_firma_facturare'],
+        'localitate_facturare': facturare['localitate_facturare'],
+        'adresa_facturare': facturare['adresa_facturare'],
+        'judet_facturare': facturare['judet_facturare'],
+    }
+
+    cerere_pdf_path = x.create_document(
+        model_cerere, context_cerere, y['final_destination'], y['firma_proiectare']['CaleStampila'].strip('"'))
+
+    path_document_final = os.path.join(
+        path_final, director_final, f"Documentatie Aviz Transelectrica - {y['client']['nume']} conform CU {y['tblCU']['NrCU']} din {x.get_date(y['tblCU']['DataCU'])}.pdf")
+
+    pdf_list = [
+        cerere_pdf_path,
+        y['tblCU']['CaleCU'].strip('"'),
+        y['tblCU']['CalePlanIncadrareCU'].strip('"'),
+        y['tblCU']['CalePlanSituatieCU'].strip('"'),
+        y['tblCU']['CaleMemoriuTehnicSS'].strip('"'),
+        y['tblCU']['CaleActeFacturare'].strip('"'),
+        y['firma_proiectare']['caleCI'].strip('"'),
+    ]
+
+    if y['lucrare']['IDClient'] != 1:
+        pdf_list.insert(-1, y['tblCU']['CaleActeBeneficiar'].strip('"'))
+
+    x.merge_pdfs(pdf_list, path_document_final)
+
+    if os.path.exists(cerere_pdf_path):
+        os.remove(cerere_pdf_path)
+
+    # PUNEM PLANUL DE SITUATIE DETALIAT
+    if y['tblCU']['CalePlanSituatiePDF']:
+        x.copy_file(y['tblCU']['CalePlanSituatiePDF'], path_final, director_final, 'Plan situatie.pdf')
+    if y['tblCU']['CalePlanSituatieDWG']:
+        x.copy_file(y['tblCU']['CalePlanSituatieDWG'], path_final, director_final, 'Plan situatie.dwg')
+
+    # -----------------------------------------------------------------------------------------------
+
+    # creez EMAILUL
+
+    model_email = (r"G:\Shared drives\Root\11. DATABASE\01. Automatizari avize\MODELE\NT\13.Aviz Transelectrica\Model email.docx")
+
+    
+
+    context_email = {
+        'nume_client': y['client']['nume'],
+        'nr_cu': y['tblCU']['NrCU'],
+        'data_cu': x.get_date(y['tblCU']['DataCU']),
+        'emitent_cu': y['EmitentCU']['denumire_institutie'],
+        'nume_lucrare': y['lucrare']['nume'],
+        'localitate_lucrare': y['lucrare']['localitate'],
+        'adresa_lucrare': y['lucrare']['adresa'],
+        'judet_lucrare': y['lucrare']['judet'],
+        'nume_client': y['client']['nume'],
+        'persoana_contact': y['contact']['nume'],
+        'telefon_contact': y['contact']['telefon'],
+        'firma_facturare': facturare['firma_facturare'],
+        'cui_firma_facturare': facturare['cui_firma_facturare'],
+    }
+
+    x.create_email(model_email, context_email, y['final_destination'])
+
+    print("\n Avizul Transelectrica a fost creat \n")
+
+
+
+def aviz_Edil_Industry(id_lucrare, path_final):
+    director_final = '22.Aviz Salubritate - Edil Industry'
+    y = x.get_data(path_final, director_final, id_lucrare)
+
+    # -----------------------------------------------------------------------------------------------
+
+    # creez CEREREA
+
+    model_cerere = (r"G:\Shared drives\Root\11. DATABASE\01. Automatizari avize\MODELE\NT\22.Aviz Salubritate - Edil Industry\Cerere aviz Edil.docx")
+
+    context_cerere = {
+        # proiectare
+
+        'nume_firma_proiectare': y['firma_proiectare']['nume'],
+        'localitate_firma_proiectare': y['firma_proiectare']['localitate'],
+        'adresa_firma_proiectare': y['firma_proiectare']['adresa'],
+        'judet_firma_proiectare': y['firma_proiectare']['judet'],
+        'email_firma_proiectare': y['firma_proiectare']['email'],
+        'cui_firma_proiectare': y['firma_proiectare']['CUI'],
+        'nr_reg_com': y['firma_proiectare']['NrRegCom'],
+        'reprezentant_firma_proiectare': y['firma_proiectare']['reprezentant'],
+        'persoana_contact': y['contact']['nume'],
+        'telefon_contact': y['contact']['telefon'],
+        # client
+        'nume_client': y['client']['nume'],
+        'localitate_client': y['client']['localitate'],
+        'adresa_client': y['client']['adresa'],
+        'judet_client': y['client']['judet'],
+        # beneficiar
+        'nume_beneficiar': y['beneficiar']['nume'],
+        # lucrare
+        'nume_lucrare': y['lucrare']['nume'],
+        'localitate_lucrare': y['lucrare']['localitate'],
+        'adresa_lucrare': y['lucrare']['adresa'],
+        'judet_lucrare': y['lucrare']['judet'],
+        'nr_cu': y['tblCU']['NrCU'],
+        'data_cu': x.get_date(y['tblCU']['DataCU']),
+        'emitent_cu': y['EmitentCU']['denumire_institutie'],
+        # Data
+        'data': y['astazi'],
+    }
+
+    cerere_pdf_path = x.create_document(
+        model_cerere, context_cerere, y['final_destination'], y['firma_proiectare']['CaleStampila'].strip('"'))
+
+    path_document_final = os.path.join(
+        path_final, director_final, f"Documentatie Aviz preluare deșeuri - SC EDIL INDUSTRY SRL  - {y['client']['nume']} conform CU {y['tblCU']['NrCU']} din {x.get_date(y['tblCU']['DataCU'])}.pdf")
+
+    pdf_list = [
+        cerere_pdf_path,
+        y['tblCU']['CaleCU'].strip('"'),
+        y['tblCU']['CalePlanIncadrareCU'].strip('"'),
+        y['tblCU']['CalePlanSituatieCU'].strip('"'),
+        y['tblCU']['CaleMemoriuTehnicSS'].strip('"'),
+        y['tblCU']['CaleActeFacturare'].strip('"'),
+    ]
+
+    x.merge_pdfs(pdf_list, path_document_final)
+
+    if os.path.exists(cerere_pdf_path):
+        os.remove(cerere_pdf_path)
+
+    # -----------------------------------------------------------------------------------------------
+
+    # creez EMAILUL
+
+    model_email = (r"G:\Shared drives\Root\11. DATABASE\01. Automatizari avize\MODELE\NT\22.Aviz Salubritate - Edil Industry\Model email.docx")
+
+    context_email = {
+        'nume_client': y['client']['nume'],
+        'nr_cu': y['tblCU']['NrCU'],
+        'data_cu': x.get_date(y['tblCU']['DataCU']),
+        'emitent_cu': y['EmitentCU']['denumire_institutie'],
+        'nume_lucrare': y['lucrare']['nume'],
+        'localitate_lucrare': y['lucrare']['localitate'],
+        'adresa_lucrare': y['lucrare']['adresa'],
+        'judet_lucrare': y['lucrare']['judet'],
+        'nume_client': y['client']['nume'],
+        'persoana_contact': y['contact']['nume'],
+        'telefon_contact': y['contact']['telefon'],
+    }
+
+    x.create_email(model_email, context_email, y['final_destination'])
+
+    print("\n Avizul preluare deseuri - EDIL INDUSTRY SRL \n")
+
+
+
+def negatie_DSP(id_lucrare, path_final):
+    director_final = '21.Negatie DSP - Neamt'
+    y = x.get_data(path_final, director_final, id_lucrare)
+
+    # -----------------------------------------------------------------------------------------------
+
+    # creez CEREREA
+
+    model_cerere = (r"G:\Shared drives\Root\11. DATABASE\01. Automatizari avize\MODELE\NT\21.Negatie DSP\Adresa DSP Neamt.docx")
+
+    context_cerere = {
+        # proiectare
+
+        'nume_firma_proiectare': y['firma_proiectare']['nume'],
+        'localitate_firma_proiectare': y['firma_proiectare']['localitate'],
+        'adresa_firma_proiectare': y['firma_proiectare']['adresa'],
+        'judet_firma_proiectare': y['firma_proiectare']['judet'],
+        'email_firma_proiectare': y['firma_proiectare']['email'],
+        'cui_firma_proiectare': y['firma_proiectare']['CUI'],
+        'nr_reg_com': y['firma_proiectare']['NrRegCom'],
+        'reprezentant_firma_proiectare': y['firma_proiectare']['reprezentant'],
+        'persoana_contact': y['contact']['nume'],
+        'telefon_contact': y['contact']['telefon'],
+        # client
+        'nume_client': y['client']['nume'],
+        'localitate_client': y['client']['localitate'],
+        'adresa_client': y['client']['adresa'],
+        'judet_client': y['client']['judet'],
+        # beneficiar
+        'nume_beneficiar': y['beneficiar']['nume'],
+        # lucrare
+        'nume_lucrare': y['lucrare']['nume'],
+        'localitate_lucrare': y['lucrare']['localitate'],
+        'adresa_lucrare': y['lucrare']['adresa'],
+        'judet_lucrare': y['lucrare']['judet'],
+        'nr_cu': y['tblCU']['NrCU'],
+        'data_cu': x.get_date(y['tblCU']['DataCU']),
+        'emitent_cu': y['EmitentCU']['denumire_institutie'],
+        # Data
+        'data': y['astazi'],
+    }
+
+    cerere_pdf_path = x.create_document(
+        model_cerere, context_cerere, y['final_destination'], y['firma_proiectare']['CaleStampila'].strip('"'))
+
+    path_document_final = os.path.join(
+        path_final, director_final, f"Documentatie Negatie DSP - de printat.pdf")
+
+    pdf_list = [
+        cerere_pdf_path,
+        y['tblCU']['CaleCU'].strip('"'),
+        y['tblCU']['CalePlanIncadrareCU'].strip('"'),
+        y['tblCU']['CalePlanSituatieCU'].strip('"'),
+        y['tblCU']['CaleMemoriuTehnicSS'].strip('"'),
+        y['tblCU']['CaleActeFacturare'].strip('"'),
+    ]
+
+    x.merge_pdfs_print(pdf_list, path_document_final)
+
+    if os.path.exists(cerere_pdf_path):
+        os.remove(cerere_pdf_path)
+
+    # PUNEM PLANUL DE SITUATIE DETALIAT
+    x.copy_file(y['tblCU']['CalePlanSituatiePDF'], path_final, director_final, 'Plan situatie.pdf')
+
+
+    # -----------------------------------------------------------------------------------------------
+
+    # creez EMAILUL
+
+    x.copy_file("G:/Shared drives/Root/11. DATABASE/01. Automatizari avize/MODELE/NT/21.Negatie DSP/Citeste-ma.docx", path_final, director_final, 'Citeste-ma.docx')
+
+    print("\n Documentatia de negatie DSP - Neamț a fost creată \n")

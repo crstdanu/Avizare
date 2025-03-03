@@ -3,9 +3,9 @@ import avize_BT as depune_la_botosani
 
 
 
-id_lucrare = 9
+id_lucrare = 49
 
-path_final = r"G:\Shared drives\Root\11. DATABASE\Pentru VIKA\135-Habitaria"
+path_final = r"G:\Shared drives\Root\11. DATABASE\Pentru Dima"
 
  
 

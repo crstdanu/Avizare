@@ -183,6 +183,9 @@ def aviz_EE_Delgaz(id_lucrare, path_final):
         y['tblCU']['CaleActeFacturare'].strip('"'),
     ]
 
+    if y['lucrare']['IDClient'] != 1:
+        pdf_list.insert(-1, y['tblCU']['CaleActeBeneficiar'].strip('"'))
+
     x.merge_pdfs(pdf_list, path_document_final)
 
     if os.path.exists(cerere_EE_pdf_path):
@@ -275,6 +278,9 @@ def aviz_GN_Delgaz(id_lucrare, path_final):
         y['tblCU']['CaleMemoriuTehnicSS'].strip('"'),
         y['tblCU']['CaleActeFacturare'].strip('"'),
     ]
+
+    if y['lucrare']['IDClient'] != 1:
+        pdf_list.insert(-1, y['tblCU']['CaleActeBeneficiar'].strip('"'))
 
     x.merge_pdfs(pdf_list, path_document_final)
 
@@ -737,7 +743,6 @@ def aviz_PMI_Mediu(id_lucrare, path_final):
         'judet_firma_proiectare': y['firma_proiectare']['judet'],
         'email_firma_proiectare': y['firma_proiectare']['email'],
         'reprezentant_firma_proiectare': y['firma_proiectare']['reprezentant'],
-        'descrierea_proiectului': y['lucrare']['descrierea_proiectului'],
         'intocmit': y['intocmit'],
         'verificat': y['verificat'],
         'persoana_contact': y['contact']['nume'],
@@ -790,7 +795,7 @@ def aviz_PMI_Mediu(id_lucrare, path_final):
         y['tblCU']['CaleActeBeneficiar'].strip('"'),
     ]
 
-    x.merge_pdfs_print(pdf_list, path_document_final)
+    x.merge_pdfs(pdf_list, path_document_final)
 
     # -----------------------------------------------------------------------------------------------
 
@@ -878,7 +883,7 @@ def aviz_PMI_SEn(id_lucrare, path_final):
     context_email = {
         'nume_client': y['client']['nume'],
         'nr_cu': y['tblCU']['NrCU'],
-        'data_cu': y['tblCU']['DataCU'],
+        'data_cu': x.get_date(y['tblCU']['DataCU']),
         'emitent_cu': y['EmitentCU']['denumire_institutie'],
         'nume_lucrare': y['lucrare']['nume'],
         'localitate_lucrare': y['lucrare']['localitate'],
@@ -892,6 +897,97 @@ def aviz_PMI_SEn(id_lucrare, path_final):
     x.create_email(model_email, context_email, y['final_destination'])
 
     print("\nAvizul PMI - SEn a fost creat \n")
+
+
+
+def aviz_PMI_Trafic_Urban(id_lucrare, path_final):
+    director_final = '11.Aviz PMI Trafic Urban'
+    y = x.get_data(path_final, director_final, id_lucrare)
+
+    # -----------------------------------------------------------------------------------------------
+
+    # creez CEREREA
+
+    model_cerere = (
+        'G:/Shared drives/Root/11. DATABASE/01. Automatizari avize/MODELE/IS/23.Aviz PMI Trafic Urban/'f"Model aviz PMI MTU{' - GENERAL TEHNIC' if y['lucrare']['IDFirmaProiectare'] == 3 else ' - PROING SERV' if y['lucrare']['IDFirmaProiectare'] == 4 else ' - ROGOTEHNIC'}.docx")
+
+    context_cerere = {
+        # proiectare
+
+        'nume_firma_proiectare': y['firma_proiectare']['nume'],
+        'localitate_firma_proiectare': y['firma_proiectare']['localitate'],
+        'adresa_firma_proiectare': y['firma_proiectare']['adresa'],
+        'judet_firma_proiectare': y['firma_proiectare']['judet'],
+        'email_firma_proiectare': y['firma_proiectare']['email'],
+        'cui_firma_proiectare': y['firma_proiectare']['CUI'],
+        'nr_reg_com': y['firma_proiectare']['NrRegCom'],
+        'reprezentant_firma_proiectare': y['firma_proiectare']['reprezentant'],
+        'persoana_contact': y['contact']['nume'],
+        'telefon_contact': y['contact']['telefon'],
+        # client
+        'nume_client': y['client']['nume'],
+        'localitate_client': y['client']['localitate'],
+        'adresa_client': y['client']['adresa'],
+        'judet_client': y['client']['judet'],
+        # beneficiar
+        'nume_beneficiar': y['beneficiar']['nume'],
+        # lucrare
+        'nume_lucrare': y['lucrare']['nume'],
+        'localitate_lucrare': y['lucrare']['localitate'],
+        'adresa_lucrare': y['lucrare']['adresa'],
+        'judet_lucrare': y['lucrare']['judet'],
+        'nr_cu': y['tblCU']['NrCU'],
+        'data_cu': x.get_date(y['tblCU']['DataCU']),
+        'emitent_cu': y['EmitentCU']['denumire_institutie'],
+        # Data
+        'data': y['astazi'],
+    }
+
+    cerere_pdf_path = x.create_document(
+        model_cerere, context_cerere, y['final_destination'], y['firma_proiectare']['CaleStampila'].strip('"'))
+
+    path_document_final = os.path.join(
+        path_final, director_final, f"Documentatie aviz PMI - Trafic Urban  - {y['client']['nume']} conform CU {y['tblCU']['NrCU']} din {x.get_date(y['tblCU']['DataCU'])}.pdf")
+
+    pdf_list = [
+        cerere_pdf_path,
+        y['tblCU']['CaleCU'].strip('"'),
+        y['tblCU']['CalePlanIncadrareCU'].strip('"'),
+        y['tblCU']['CalePlanSituatieCU'].strip('"'),
+        y['tblCU']['CaleMemoriuTehnicSS'].strip('"'),
+        y['tblCU']['CaleActeBeneficiar'].strip('"'),
+    ]
+
+    x.merge_pdfs(pdf_list, path_document_final)
+
+    if os.path.exists(cerere_pdf_path):
+        os.remove(cerere_pdf_path)
+
+    # -----------------------------------------------------------------------------------------------
+
+    # creez EMAILUL
+
+    model_email = (
+        r"G:\Shared drives\Root\11. DATABASE\01. Automatizari avize\MODELE\IS\23.Aviz PMI Trafic Urban\Model email.docx")
+
+    context_email = {
+        'nume_client': y['client']['nume'],
+        'nr_cu': y['tblCU']['NrCU'],
+        'data_cu': x.get_date(y['tblCU']['DataCU']),
+        'emitent_cu': y['EmitentCU']['denumire_institutie'],
+        'nume_lucrare': y['lucrare']['nume'],
+        'localitate_lucrare': y['lucrare']['localitate'],
+        'adresa_lucrare': y['lucrare']['adresa'],
+        'judet_lucrare': y['lucrare']['judet'],
+        'nume_client': y['client']['nume'],
+        'persoana_contact': y['contact']['nume'],
+        'telefon_contact': y['contact']['telefon'],
+    }
+
+    x.create_email(model_email, context_email, y['final_destination'])
+
+    print("\nAvizul PMI - Trafic Urban a fost creat \n")
+
 
 
 def aviz_PMI_BSM(id_lucrare, path_final):
@@ -931,7 +1027,7 @@ def aviz_PMI_BSM(id_lucrare, path_final):
         'adresa_lucrare': y['lucrare']['adresa'],
         'judet_lucrare': y['lucrare']['judet'],
         'nr_cu': y['tblCU']['NrCU'],
-        'data_cu': y['tblCU']['DataCU'],
+        'data_cu': x.get_date(y['tblCU']['DataCU']),
         'emitent_cu': y['EmitentCU']['denumire_institutie'],
         # Data
         'data': y['astazi'],
@@ -941,7 +1037,7 @@ def aviz_PMI_BSM(id_lucrare, path_final):
         model_cerere, context_cerere, y['final_destination'], y['firma_proiectare']['CaleStampila'].strip('"'))
 
     path_document_final = os.path.join(
-        path_final, director_final, f"Documentatie aviz PMI - Strazi Municipale  - {y['client']['nume']} conform CU {y['tblCU']['NrCU']} din {y['tblCU']['DataCU']}.pdf")
+        path_final, director_final, f"Documentatie aviz PMI - Strazi Municipale  - {y['client']['nume']} conform CU {y['tblCU']['NrCU']} din {x.get_date(y['tblCU']['DataCU'])}.pdf")
 
     pdf_list = [
         cerere_PMI_BSM_pdf_path,
@@ -967,7 +1063,7 @@ def aviz_PMI_BSM(id_lucrare, path_final):
     context_email = {
         'nume_client': y['client']['nume'],
         'nr_cu': y['tblCU']['NrCU'],
-        'data_cu': y['tblCU']['DataCU'],
+        'data_cu': x.get_date(y['tblCU']['DataCU']),
         'emitent_cu': y['EmitentCU']['denumire_institutie'],
         'nume_lucrare': y['lucrare']['nume'],
         'localitate_lucrare': y['lucrare']['localitate'],
@@ -1020,7 +1116,7 @@ def aviz_PMI_Spatii_Verzi(id_lucrare, path_final):
         'adresa_lucrare': y['lucrare']['adresa'],
         'judet_lucrare': y['lucrare']['judet'],
         'nr_cu': y['tblCU']['NrCU'],
-        'data_cu': y['tblCU']['DataCU'],
+        'data_cu': x.get_date(y['tblCU']['DataCU']),
         'emitent_cu': y['EmitentCU']['denumire_institutie'],
         # Data
         'data': y['astazi'],
@@ -1030,7 +1126,7 @@ def aviz_PMI_Spatii_Verzi(id_lucrare, path_final):
         model_cerere, context_cerere, y['final_destination'], y['firma_proiectare']['CaleStampila'].strip('"'))
 
     path_document_final = os.path.join(
-        path_final, director_final, f"Documentatie aviz PMI - Spatii Verzi  - {y['client']['nume']} conform CU {y['tblCU']['NrCU']} din {y['tblCU']['DataCU']}.pdf")
+        path_final, director_final, f"Documentatie aviz PMI - Spatii Verzi  - {y['client']['nume']} conform CU {y['tblCU']['NrCU']} din {x.get_date(y['tblCU']['DataCU'])}.pdf")
 
     pdf_list = [
         cerere_PMI_BSM_pdf_path,
@@ -1056,7 +1152,7 @@ def aviz_PMI_Spatii_Verzi(id_lucrare, path_final):
     context_email = {
         'nume_client': y['client']['nume'],
         'nr_cu': y['tblCU']['NrCU'],
-        'data_cu': y['tblCU']['DataCU'],
+        'data_cu': x.get_date(y['tblCU']['DataCU']),
         'emitent_cu': y['EmitentCU']['denumire_institutie'],
         'nume_lucrare': y['lucrare']['nume'],
         'localitate_lucrare': y['lucrare']['localitate'],
@@ -1108,7 +1204,7 @@ def aviz_MAI(id_lucrare, path_final):
         'adresa_lucrare': y['lucrare']['adresa'],
         'judet_lucrare': y['lucrare']['judet'],
         'nr_cu': y['tblCU']['NrCU'],
-        'data_cu': y['tblCU']['DataCU'],
+        'data_cu': x.get_date(y['tblCU']['DataCU']),
         'emitent_cu': y['EmitentCU']['denumire_institutie'],
         # Data
         'data': y['astazi'],
@@ -1176,7 +1272,7 @@ def aviz_ISU(id_lucrare, path_final):
         'adresa_lucrare': y['lucrare']['adresa'],
         'judet_lucrare': y['lucrare']['judet'],
         'nr_cu': y['tblCU']['NrCU'],
-        'data_cu': y['tblCU']['DataCU'],
+        'data_cu': x.get_date(y['tblCU']['DataCU']),
         'emitent_cu': y['EmitentCU']['denumire_institutie'],
         # Data
         'data': y['astazi'],
@@ -1186,7 +1282,7 @@ def aviz_ISU(id_lucrare, path_final):
         model_cerere, context_cerere, y['final_destination'])
 
     path_document_final = os.path.join(
-        path_final, director_final, f"Documentatie aviz ISU{y['client']['nume']} conform CU {y['tblCU']['NrCU']} din {y['tblCU']['DataCU']}.pdf")
+        path_final, director_final, f"Documentatie aviz ISU{y['client']['nume']} conform CU {y['tblCU']['NrCU']} din {x.get_date(y['tblCU']['DataCU'])}.pdf")
 
     # -----------------------------------------------------------------------------------------------------------------------------------------
 
@@ -1197,7 +1293,7 @@ def aviz_ISU(id_lucrare, path_final):
     context_opis = {
         # lucrare
         'nr_cu': y['tblCU']['NrCU'],
-        'data_cu': y['tblCU']['DataCU'],
+        'data_cu': x.get_date(y['tblCU']['DataCU']),
         # data
         'data': y['astazi'],
         # numar file
@@ -1240,7 +1336,7 @@ def aviz_ISU(id_lucrare, path_final):
     context_email = {
         'nume_client': y['client']['nume'],
         'nr_cu': y['tblCU']['NrCU'],
-        'data_cu': y['tblCU']['DataCU'],
+        'data_cu': x.get_date(y['tblCU']['DataCU']),
         'emitent_cu': y['EmitentCU']['denumire_institutie'],
         'nume_lucrare': y['lucrare']['nume'],
         'localitate_lucrare': y['lucrare']['localitate'],
@@ -1292,7 +1388,7 @@ def aviz_Salubris(id_lucrare, path_final):
         'adresa_lucrare': y['lucrare']['adresa'],
         'judet_lucrare': y['lucrare']['judet'],
         'nr_cu': y['tblCU']['NrCU'],
-        'data_cu': y['tblCU']['DataCU'],
+        'data_cu': x.get_date(y['tblCU']['DataCU']),
         'emitent_cu': y['EmitentCU']['denumire_institutie'],
         # Data
         'data': y['astazi'],
@@ -1358,7 +1454,7 @@ def aviz_DSP(id_lucrare, path_final):
     context_email = {
         'nume_client': y['client']['nume'],
         'nr_cu': y['tblCU']['NrCU'],
-        'data_cu': y['tblCU']['DataCU'],
+        'data_cu': x.get_date(y['tblCU']['DataCU']),
         'emitent_cu': y['EmitentCU']['denumire_institutie'],
         'nume_lucrare': y['lucrare']['nume'],
         'localitate_lucrare': y['lucrare']['localitate'],
@@ -1376,7 +1472,7 @@ def aviz_DSP(id_lucrare, path_final):
     # creez DOCUMENTUL FINAL
 
     path_document_final = os.path.join(
-        path_final, director_final, f"Documentatie aviz DSP Iași - {y['client']['nume']} conform CU nr. {y['tblCU']['NrCU']} din {y['tblCU']['DataCU']}.pdf")
+        path_final, director_final, f"Documentatie aviz DSP Iași - {y['client']['nume']} conform CU nr. {y['tblCU']['NrCU']} din {x.get_date(y['tblCU']['DataCU'])}.pdf")
 
     pdf_list = [
         cerere_pdf_path,
@@ -1435,10 +1531,10 @@ def aviz_HCL(id_lucrare, path_final):
         'adresa_lucrare': y['lucrare']['adresa'],
         'judet_lucrare': y['lucrare']['judet'],
         'nr_cu': y['tblCU']['NrCU'],
-        'data_cu': y['tblCU']['DataCU'],
+        'data_cu': x.get_date(y['tblCU']['DataCU']),
         'emitent_cu': y['EmitentCU']['denumire_institutie'],
-        'suprafata_mp': y['lucrare']['SuprafataMP'],
-        'lungime_metri': y['lucrare']['LungimeTraseuMetri'],
+        'suprafata_mp': y['tblCU']['SuprafataOcupata'],
+        'lungime_metri': y['tblCU']['LungimeTraseu'],
         # Data
         'data': y['astazi'],
     }
@@ -1453,7 +1549,7 @@ def aviz_HCL(id_lucrare, path_final):
 
     pdf_list = [
         cerere_HCL_pdf_path,
-        y['lucrare']['CaleAvizGiS'].strip('"'),
+        
         y['tblCU']['CaleCU'].strip('"'),
         y['tblCU']['CalePlanIncadrareCU'].strip('"'),
         y['tblCU']['CalePlanIncadrareCU'].strip('"'),
@@ -1463,11 +1559,17 @@ def aviz_HCL(id_lucrare, path_final):
         y['tblCU']['CaleActeBeneficiar'].strip('"'),
     ]
 
-    if y['lucrare']['IDClient'] != 1:
-        pdf_list.append(avizCTEsauATR = y['lucrare']['CaleAvizCTEsauATR'].strip('"'))
+    if y['tblCU']['CaleATR']:
+        pdf_list.append(y['tblCU']['CaleATR'].strip('"'))
+
+    if y['tblCU']['CaleAvizCTE']:
+        pdf_list.append(y['tblCU']['CaleAvizCTE'].strip('"'))
+
+    if y['tblCU']['CaleAvizGiS']:
+        pdf_list.insert(1, y['tblCU']['CaleAvizGiS'].strip('"'))
         
 
-    with os.scandir(y['lucrare']['CaleExtraseCF'].strip('"')) as entries:
+    with os.scandir(y['tblCU']['CaleExtraseCF'].strip('"')) as entries:
         for entry in entries:
             if entry.is_file() and "Extras" in str(entry):
                 pdf_list.append(entry.path)
@@ -1517,7 +1619,7 @@ def aviz_PMI_GiS(id_lucrare, path_final):
         'adresa_lucrare': y['lucrare']['adresa'],
         'judet_lucrare': y['lucrare']['judet'],
         'nr_cu': y['tblCU']['NrCU'],
-        'data_cu': y['tblCU']['DataCU'],
+        'data_cu': x.get_date(y['tblCU']['DataCU']),
         'emitent_cu': y['EmitentCU']['denumire_institutie'],
         # Data
         'data': y['astazi'],
@@ -1564,7 +1666,7 @@ def aviz_PMI_GiS(id_lucrare, path_final):
     context_email = {
         'nume_client': y['client']['nume'],
         'nr_cu': y['tblCU']['NrCU'],
-        'data_cu': x.get_date(x.get_date(y['tblCU']['DataCU'])),
+        'data_cu': x.get_date(y['tblCU']['DataCU']),
         'emitent_cu': y['EmitentCU']['denumire_institutie'],
         'nume_lucrare': y['lucrare']['nume'],
         'localitate_lucrare': y['lucrare']['localitate'],
@@ -1648,7 +1750,7 @@ def aviz_Nomenclatura(id_lucrare, path_final):
     ]
 
 
-    with os.scandir(y['lucrare']['CaleExtraseCF'].strip('"')) as entries:
+    with os.scandir(y['tblCU']['CaleExtraseCF'].strip('"')) as entries:
         for entry in entries:
             if entry.is_file() and "Extras" in str(entry):
                 pdf_list.append(entry.path)
@@ -1754,3 +1856,198 @@ def aviz_OAR(id_lucrare, path_final):
     x.create_email(model_email, context_email, y['final_destination'])
 
     print("\nAvizul OAR - Iași a fost creat \n")
+
+
+
+def aviz_Cultura(id_lucrare, path_final):
+    director_final = '09.Aviz Cultura - Iasi'
+    y = x.get_data(path_final, director_final, id_lucrare)
+
+    # -----------------------------------------------------------------------------------------------
+
+    # creez CEREREA
+
+    model_cerere = (
+        'G:/Shared drives/Root/11. DATABASE/01. Automatizari avize/MODELE/IS/09.Aviz Cultura/'f"Cerere Cultura{' - DELGAZ' if y['lucrare']['IDClient'] == 1 else ''}.docx")
+
+    calcul = float(y['tblCU']['SuprafataOcupata']) * 3.00
+    total_aviz = round(calcul, 2)
+
+    context_cerere = {
+        # proiectare
+
+        'nume_firma_proiectare': y['firma_proiectare']['nume'],
+        'localitate_firma_proiectare': y['firma_proiectare']['localitate'],
+        'adresa_firma_proiectare': y['firma_proiectare']['adresa'],
+        'judet_firma_proiectare': y['firma_proiectare']['judet'],
+        'email_firma_proiectare': y['firma_proiectare']['email'],
+        'cui_firma_proiectare': y['firma_proiectare']['CUI'],
+        'nr_reg_com': y['firma_proiectare']['NrRegCom'],
+        'reprezentant_firma_proiectare': y['firma_proiectare']['reprezentant'],
+        'persoana_contact': y['contact']['nume'],
+        'telefon_contact': y['contact']['telefon'],
+        # client
+        'nume_client': y['client']['nume'],
+        'localitate_client': y['client']['localitate'],
+        'adresa_client': y['client']['adresa'],
+        'judet_client': y['client']['judet'],
+        # beneficiar
+        'nume_beneficiar': y['beneficiar']['nume'],
+        # lucrare
+        'nume_lucrare': y['lucrare']['nume'],
+        'localitate_lucrare': y['lucrare']['localitate'],
+        'adresa_lucrare': y['lucrare']['adresa'],
+        'judet_lucrare': y['lucrare']['judet'],
+        'nr_cu': y['tblCU']['NrCU'],
+        'data_cu': x.get_date(y['tblCU']['DataCU']),
+        'emitent_cu': y['EmitentCU']['denumire_institutie'],
+        'suprafata_mp': y['tblCU']['SuprafataOcupata'],
+        'total_aviz': total_aviz,
+        # Data
+        'data': y['astazi'],
+    }
+
+    cerere_pdf_path = x.create_document(
+        model_cerere, context_cerere, y['final_destination'], y['firma_proiectare']['CaleStampila'].strip('"'))
+
+    path_document_final = os.path.join(
+        path_final, director_final, f"Documentatie aviz Cultura - {y['client']['nume']} conform CU {y['tblCU']['NrCU']} din {x.get_date(y['tblCU']['DataCU'])}.pdf")
+
+    path_document_printabil = os.path.join(
+        path_final, director_final, f"Documentatie aviz Cultura - DE PRINTAT.pdf")
+
+    pdf_list = [
+        cerere_pdf_path,
+        y['tblCU']['CaleCU'].strip('"'),
+        y['tblCU']['CalePlanIncadrareCU'].strip('"'),
+        y['tblCU']['CalePlanSituatieCU'].strip('"'),
+        y['tblCU']['CaleMemoriuTehnicSS'].strip('"'),
+        y['tblCU']['CaleActeFacturare'].strip('"'),
+    ]
+
+    x.merge_pdfs(pdf_list, path_document_final)
+    x.merge_pdfs_print(pdf_list, path_document_printabil)
+
+    if os.path.exists(cerere_pdf_path):
+        os.remove(cerere_pdf_path)
+
+
+
+    # -----------------------------------------------------------------------------------------------
+
+    # creez EMAILUL
+
+    model_email = (r"G:\Shared drives\Root\11. DATABASE\01. Automatizari avize\MODELE\IS\09.Aviz Cultura\Model email.docx")
+    
+    facturare = x.facturare(id_lucrare)
+
+    context_email = {
+        'nume_client': y['client']['nume'],
+        'nr_cu': y['tblCU']['NrCU'],
+        'data_cu': x.get_date(y['tblCU']['DataCU']),
+        'emitent_cu': y['EmitentCU']['denumire_institutie'],
+        'nume_lucrare': y['lucrare']['nume'],
+        'localitate_lucrare': y['lucrare']['localitate'],
+        'adresa_lucrare': y['lucrare']['adresa'],
+        'judet_lucrare': y['lucrare']['judet'],
+        'nume_client': y['client']['nume'],
+        'persoana_contact': y['contact']['nume'],
+        'telefon_contact': y['contact']['telefon'],
+        'firma_facturare': facturare['firma_facturare'],
+        'cui_firma_facturare': facturare['cui_firma_facturare'],
+
+    }
+
+    x.create_email(model_email, context_email, y['final_destination'])
+
+    print("\nAvizul Cultura - Iași a fost creat \n")
+
+
+def aviz_Evidenta_Patrimoniu(id_lucrare, path_final):
+    director_final = '18.Aviz HCL'
+    y = x.get_data(path_final, director_final, id_lucrare)
+
+    # -----------------------------------------------------------------------------------------------
+
+    # creez CEREREA
+
+    model_cerere = (
+        'G:/Shared drives/Root/11. DATABASE/01. Automatizari avize/MODELE/IS/24.Aviz Evidenta Patrimoniu/'f"Cerere Evidenta Patrimoniu{' - GENERAL TEHNIC' if y['lucrare']['IDFirmaProiectare'] == 3 else ' - PROING SERV' if y['lucrare']['IDFirmaProiectare'] == 4 else ' - ROGOTEHNIC'}.docx")
+
+    context_cerere = {
+        # proiectare
+        'nume_firma_proiectare': y['firma_proiectare']['nume'],
+        'localitate_firma_proiectare': y['firma_proiectare']['localitate'],
+        'adresa_firma_proiectare': y['firma_proiectare']['adresa'],
+        'judet_firma_proiectare': y['firma_proiectare']['judet'],
+        'email_firma_proiectare': y['firma_proiectare']['email'],
+        'cui_firma_proiectare': y['firma_proiectare']['CUI'],
+        'nr_reg_com': y['firma_proiectare']['NrRegCom'],
+        'reprezentant_firma_proiectare': y['firma_proiectare']['reprezentant'],
+        'persoana_contact': y['contact']['nume'],
+        'telefon_contact': y['contact']['telefon'],
+        # client
+        'nume_client': y['client']['nume'],
+        'localitate_client': y['client']['localitate'],
+        'adresa_client': y['client']['adresa'],
+        'judet_client': y['client']['judet'],
+        # beneficiar
+        'nume_beneficiar': y['beneficiar']['nume'],
+        # lucrare
+        'nume_lucrare': y['lucrare']['nume'],
+        'localitate_lucrare': y['lucrare']['localitate'],
+        'adresa_lucrare': y['lucrare']['adresa'],
+        'judet_lucrare': y['lucrare']['judet'],
+        'nr_cu': y['tblCU']['NrCU'],
+        'data_cu': x.get_date(y['tblCU']['DataCU']),
+        'emitent_cu': y['EmitentCU']['denumire_institutie'],
+        'suprafata_mp': y['tblCU']['SuprafataOcupata'],
+        'lungime_metri': y['tblCU']['LungimeTraseu'],
+        # Data
+        'data': y['astazi'],
+    }
+
+    cerere_pdf_path = x.create_document(
+        model_cerere, context_cerere, y['final_destination'], y['firma_proiectare']['CaleStampila'].strip('"'))
+
+    path_document_final = os.path.join(
+        path_final, director_final, f"Documentatie Aviz Evidenta Patrimoniu - DE PRINTAT.pdf")
+
+
+
+    pdf_list = [
+        cerere_pdf_path,
+    
+        y['tblCU']['CaleCU'].strip('"'),
+        y['tblCU']['CalePlanIncadrareCU'].strip('"'),
+        y['tblCU']['CalePlanIncadrareCU'].strip('"'),
+        y['tblCU']['CalePlanSituatieCU'].strip('"'),
+        y['tblCU']['CalePlanSituatieCU'].strip('"'),
+        y['tblCU']['CaleMemoriuTehnicSS'].strip('"'),
+        y['tblCU']['CaleActeBeneficiar'].strip('"'),
+        y['tblCU']['CaleAvizGiS'].strip('"'),
+    ]
+
+    if y['tblCU']['CaleATR']:
+        pdf_list.append(y['tblCU']['CaleATR'].strip('"'))
+    else:
+        pdf_list.append(y['tblCU']['CaleAvizCTE'].strip('"'))
+
+        
+
+   
+
+    with os.scandir(y['tblCU']['CaleExtraseCF'].strip('"')) as entries:
+        for entry in entries:
+            if entry.is_file() and "Extras" in str(entry):
+                pdf_list.append(entry.path)
+
+
+
+    x.merge_pdfs_print(pdf_list, path_document_final)
+
+
+    if os.path.exists(cerere_pdf_path):
+        os.remove(cerere_pdf_path)
+
+    print("\nAvizul Evidenta Patrimoniu a fost creat \n")

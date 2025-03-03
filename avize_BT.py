@@ -61,7 +61,7 @@ def aviz_APM(id_lucrare, path_final):
         'judet_firma_proiectare': y['firma_proiectare']['judet'],
         'email_firma_proiectare': y['firma_proiectare']['email'],
         'reprezentant_firma_proiectare': y['firma_proiectare']['reprezentant'],
-        'descrierea_proiectului': y['lucrare']['descrierea_proiectului'],
+        'descrierea_proiectului': y['tblCU']['DescriereaProiectului'],
         'intocmit': y['intocmit'],
         'verificat': y['verificat'],
         'persoana_contact': y['contact']['nume'],
@@ -109,7 +109,7 @@ def aviz_APM(id_lucrare, path_final):
         y['tblCU']['CalePlanIncadrareCU'].strip('"'),
         y['tblCU']['CalePlanSituatieCU'].strip('"'),
         notificare_pdf_path,
-        y['tblCU']['CaleActeBeneficiar'].strip('"'),
+        y['tblCU']['CaleActeFacturare'].strip('"'),
     ]
 
     x.merge_pdfs(pdf_list, path_document_final)
@@ -192,6 +192,9 @@ def aviz_EE_Delgaz(id_lucrare, path_final):
         y['tblCU']['CaleMemoriuTehnicSS'].strip('"'),
         y['tblCU']['CaleActeFacturare'].strip('"'),
     ]
+
+    if y['lucrare']['IDClient'] != 1:
+        pdf_list.insert(-1, y['tblCU']['CaleActeBeneficiar'].strip('"'))
 
     x.merge_pdfs(pdf_list, path_document_final)
 
@@ -292,6 +295,9 @@ def aviz_GN_Delgaz(id_lucrare, path_final):
         y['tblCU']['CaleMemoriuTehnicSS'].strip('"'),
         y['tblCU']['CaleActeFacturare'].strip('"'),
     ]
+
+    if y['lucrare']['IDClient'] != 1:
+        pdf_list.insert(-1, y['tblCU']['CaleActeBeneficiar'].strip('"'))
 
     x.merge_pdfs(pdf_list, path_document_final)
 
@@ -442,8 +448,8 @@ def aviz_HCL(id_lucrare, path_final):
         'nr_cu': y['tblCU']['NrCU'],
         'data_cu': x.get_date(y['tblCU']['DataCU']),
         'emitent_cu': y['EmitentCU']['denumire_institutie'],
-        'suprafata_mp': y['lucrare']['SuprafataMP'],
-        'lungime_metri': y['lucrare']['LungimeTraseuMetri'],
+        'suprafata_mp': y['tblCU']['SuprafataOcupata'],
+        'lungime_metri': y['tblCU']['LungimeTraseu'],
         # Data
         'data': y['astazi'],
     }
@@ -452,7 +458,7 @@ def aviz_HCL(id_lucrare, path_final):
         model_cerere, context_cerere, y['final_destination'], y['firma_proiectare']['CaleStampila'].strip('"'))
 
     path_document_final = os.path.join(
-        path_final, director_final, f"Documentatie aviz HCL - DE PRINTAT.pdf")
+        path_final, director_final, f"Documentatie aviz HCL.pdf")
 
     pdf_list = [
 
@@ -464,7 +470,7 @@ def aviz_HCL(id_lucrare, path_final):
         y['tblCU']['CaleActeFacturare'].strip('"'),
         ]
 
-    with os.scandir(y['lucrare']['CaleExtraseCF']) as entries:
+    with os.scandir(y['tblCU']['CaleExtraseCF'].strip('"')) as entries:
         for entry in entries:
             if entry.is_file() and "Extras" in str(entry):
                 pdf_list.append(entry.path)
@@ -549,10 +555,6 @@ def aviz_SGA(id_lucrare, path_final):
         y['tblCU']['CaleActeFacturare'].strip('"'),
     ]
 
-    with os.scandir(y['lucrare']['CaleExtraseCF'].strip('"')) as entries:
-        for entry in entries:
-            if entry.is_file() and "Extras" in str(entry):
-                pdf_list.append(entry.path)
 
     x.merge_pdfs(pdf_list, path_document_final)
 
@@ -592,14 +594,14 @@ def aviz_SGA(id_lucrare, path_final):
 
 
 def aviz_OAR(id_lucrare, path_final):
-    director_final = '08.Aviz OAR - Botoșani'
+    director_final = '08.Aviz OAR - Botosani'
     y = x.get_data(path_final, director_final, id_lucrare)
 
     # -----------------------------------------------------------------------------------------------
 
     # creez CEREREA
 
-    model_cerere = ("G:\Shared drives\Root\11. DATABASE\01. Automatizari avize\MODELE\BT\08.Aviz OAR\Model email.docx")
+    model_cerere = (r"G:\Shared drives\Root\11. DATABASE\01. Automatizari avize\MODELE\BT\08.Aviz OAR\Model email.docx")
 
     context_cerere = {
         # proiectare

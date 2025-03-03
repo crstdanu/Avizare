@@ -61,7 +61,7 @@ def aviz_APM(id_lucrare, path_final):
         'judet_firma_proiectare': y['firma_proiectare']['judet'],
         'email_firma_proiectare': y['firma_proiectare']['email'],
         'reprezentant_firma_proiectare': y['firma_proiectare']['reprezentant'],
-        'descrierea_proiectului': y['tblCU']['descrierea_proiectului'],
+        'descrierea_proiectului': y['tblCU']['DescriereaProiectului'], 
         'intocmit': y['intocmit'],
         'verificat': y['verificat'],
         'persoana_contact': y['contact']['nume'],
@@ -180,7 +180,7 @@ def aviz_EE_Delgaz(id_lucrare, path_final):
         model_cerere, context_cerere, y['final_destination'], y['firma_proiectare']['CaleStampila'].strip('"'))
 
     path_document_final = os.path.join(
-        path_final, director_final, f"Documentatie aviz EE - Delgaz - {y['client']['nume']} conform CU {y['tblCU']['NrCU']} din {y['lucrare']['data_cu']}.pdf")
+        path_final, director_final, f"Documentatie aviz EE - Delgaz - {y['client']['nume']} conform CU {y['tblCU']['NrCU']} din {x.get_date(y['tblCU']['DataCU'])}.pdf")
 
 
     pdf_list = [
@@ -191,6 +191,9 @@ def aviz_EE_Delgaz(id_lucrare, path_final):
         y['tblCU']['CaleMemoriuTehnicSS'].strip('"'),
         y['tblCU']['CaleActeFacturare'].strip('"'),
     ]
+
+    if y['lucrare']['IDClient'] != 1:
+        pdf_list.insert(-1, y['tblCU']['CaleActeBeneficiar'].strip('"'))
 
     x.merge_pdfs(pdf_list, path_document_final)
 
@@ -277,7 +280,7 @@ def aviz_GN_Delgaz(id_lucrare, path_final):
     cerere_GN_pdf_path = x.create_document(model_cerere, context_cerere, y['final_destination'], y['firma_proiectare']['CaleStampila'].strip('"'))
 
     path_document_final = os.path.join(
-        path_final, director_final, f"Documentatie aviz GN - Delgaz - {y['client']['nume']} conform CU nr. {y['tblCU']['NrCU']} din {y['lucrare']['data_cu']}.pdf")
+        path_final, director_final, f"Documentatie aviz GN - Delgaz - {y['client']['nume']} conform CU nr. {y['tblCU']['NrCU']} din {x.get_date(y['tblCU']['DataCU'])}.pdf")
 
     pdf_list = [
         cerere_GN_pdf_path,
@@ -287,6 +290,9 @@ def aviz_GN_Delgaz(id_lucrare, path_final):
         y['tblCU']['CaleMemoriuTehnicSS'].strip('"'),
         y['tblCU']['CaleActeFacturare'].strip('"'),
     ]
+
+    if y['lucrare']['IDClient'] != 1:
+        pdf_list.insert(-1, y['tblCU']['CaleActeBeneficiar'].strip('"'))
 
     x.merge_pdfs(pdf_list, path_document_final)
 
@@ -436,7 +442,7 @@ def aviz_HCL(id_lucrare, path_final):
         model_cerere, context_cerere, y['final_destination'], y['firma_proiectare']['CaleStampila'].strip('"'))
 
     path_document_final = os.path.join(
-        path_final, director_final, f"Documentatie aviz HCL  - {y['client']['nume']} conform CU nr. {y['tblCU']['NrCU']} din {y['lucrare']['data_cu']}.pdf.pdf")
+        path_final, director_final, f"Documentatie aviz HCL  - {y['client']['nume']} conform CU nr. {y['tblCU']['NrCU']} din {x.get_date(y['tblCU']['DataCU'])}.pdf.pdf")
 
     pdf_list = [
         cerere_HCL_pdf_path,
@@ -1268,7 +1274,7 @@ def aviz_ANANP_ST_Bacau(id_lucrare, path_final):
         'judet_firma_proiectare': y['firma_proiectare']['judet'],
         'email_firma_proiectare': y['firma_proiectare']['email'],
         'reprezentant_firma_proiectare': y['firma_proiectare']['reprezentant'],
-        'descrierea_proiectului': y['tblCU']['descrierea_proiectului'],
+        'descrierea_proiectului': y['tblCU']['DescriereaProiectului'],
         'intocmit': y['intocmit'],
         'verificat': y['verificat'],
         'persoana_contact': y['contact']['nume'],
@@ -1342,3 +1348,293 @@ def aviz_ANANP_ST_Bacau(id_lucrare, path_final):
         os.remove(notificare_pdf_path)
 
     print("\nAvizul ANANP ST-Bacău a fost creat \n")
+
+
+
+def Acord_Administrator_Drum(id_lucrare, path_final):
+    director_final = '15.Acord Administrator Drum'
+    y = x.get_data(path_final, director_final, id_lucrare)
+
+    # -----------------------------------------------------------------------------------------------
+
+    # creez CEREREA
+
+    model_cerere = (r"G:\Shared drives\Root\11. DATABASE\01. Automatizari avize\MODELE\BC\15.Acord Administrator Drum\Cerere Acord.docx")
+
+    context_cerere = {
+        # proiectare
+
+        'nume_firma_proiectare': y['firma_proiectare']['nume'],
+        'localitate_firma_proiectare': y['firma_proiectare']['localitate'],
+        'adresa_firma_proiectare': y['firma_proiectare']['adresa'],
+        'judet_firma_proiectare': y['firma_proiectare']['judet'],
+        'email_firma_proiectare': y['firma_proiectare']['email'],
+        'cui_firma_proiectare': y['firma_proiectare']['CUI'],
+        'nr_reg_com': y['firma_proiectare']['NrRegCom'],
+        'reprezentant_firma_proiectare': y['firma_proiectare']['reprezentant'],
+        'persoana_contact': y['contact']['nume'],
+        'telefon_contact': y['contact']['telefon'],
+        # client
+        'nume_client': y['client']['nume'],
+        'localitate_client': y['client']['localitate'],
+        'adresa_client': y['client']['adresa'],
+        'judet_client': y['client']['judet'],
+        # beneficiar
+        'nume_beneficiar': y['beneficiar']['nume'],
+        # lucrare
+        'nume_lucrare': y['lucrare']['nume'],
+        'localitate_lucrare': y['lucrare']['localitate'],
+        'adresa_lucrare': y['lucrare']['adresa'],
+        'judet_lucrare': y['lucrare']['judet'],
+        'nr_cu': y['tblCU']['NrCU'],
+        'data_cu': x.get_date(y['tblCU']['DataCU']),
+        'emitent_cu': y['EmitentCU']['denumire_institutie'],
+        # Data
+        'data': y['astazi'],
+    }
+
+    cerere_pdf_path = x.create_document(
+        model_cerere, context_cerere, y['final_destination'], y['firma_proiectare']['CaleStampila'].strip('"'))
+
+    path_document_final = os.path.join(
+        path_final, director_final, f"Documentatie Acord Administrator Drum - {y['client']['nume']} conform CU {y['tblCU']['NrCU']} din {x.get_date(y['tblCU']['DataCU'])}.pdf")
+
+    pdf_list = [
+        cerere_pdf_path,
+        y['tblCU']['CaleCU'].strip('"'),
+        y['tblCU']['CalePlanIncadrareCU'].strip('"'),
+        y['tblCU']['CalePlanSituatieCU'].strip('"'),
+        y['tblCU']['CaleMemoriuTehnicSS'].strip('"'),
+    ]
+
+    x.merge_pdfs(pdf_list, path_document_final)
+
+    if os.path.exists(cerere_pdf_path):
+        os.remove(cerere_pdf_path)
+
+    # -----------------------------------------------------------------------------------------------
+
+    # creez EMAILUL
+
+    model_email = (
+        r"G:\Shared drives\Root\11. DATABASE\01. Automatizari avize\MODELE\BC\15.Acord Administrator Drum\Model email.docx")
+
+    context_email = {
+        'nume_client': y['client']['nume'],
+        'nr_cu': y['tblCU']['NrCU'],
+        'data_cu': x.get_date(y['tblCU']['DataCU']),
+        'emitent_cu': y['EmitentCU']['denumire_institutie'],
+        'nume_lucrare': y['lucrare']['nume'],
+        'localitate_lucrare': y['lucrare']['localitate'],
+        'adresa_lucrare': y['lucrare']['adresa'],
+        'judet_lucrare': y['lucrare']['judet'],
+        'nume_client': y['client']['nume'],
+        'persoana_contact': y['contact']['nume'],
+        'telefon_contact': y['contact']['telefon'],
+    }
+
+    x.create_email(model_email, context_email, y['final_destination'])
+
+    print("\nAcord Administrator Drum a fost creat \n")
+
+
+def aviz_Comp_Apa_Bacau(id_lucrare, path_final):
+    director_final = '02.Aviz CRAB - Bacau'
+    y = x.get_data(path_final, director_final, id_lucrare)
+
+    # -----------------------------------------------------------------------------------------------
+
+    # creez CEREREA
+
+    model_cerere = (
+        'G:/Shared drives/Root/11. DATABASE/01. Automatizari avize/MODELE/BC/16.Aviz Compania Apa Bacau/'f"Cerere CRAB{' - DELGAZ' if y['lucrare']['IDClient'] == 1 else ''}.docx")
+
+    context_cerere = {
+        # proiectare
+
+        'nume_firma_proiectare': y['firma_proiectare']['nume'],
+        'localitate_firma_proiectare': y['firma_proiectare']['localitate'],
+        'adresa_firma_proiectare': y['firma_proiectare']['adresa'],
+        'judet_firma_proiectare': y['firma_proiectare']['judet'],
+        'email_firma_proiectare': y['firma_proiectare']['email'],
+        'cui_firma_proiectare': y['firma_proiectare']['CUI'],
+        'nr_reg_com': y['firma_proiectare']['NrRegCom'],
+        'reprezentant_firma_proiectare': y['firma_proiectare']['reprezentant'],
+        'persoana_contact': y['contact']['nume'],
+        'telefon_contact': y['contact']['telefon'],
+        # client
+        'nume_client': y['client']['nume'],
+        'localitate_client': y['client']['localitate'],
+        'adresa_client': y['client']['adresa'],
+        'judet_client': y['client']['judet'],
+        # beneficiar
+        'nume_beneficiar': y['beneficiar']['nume'],
+        # lucrare
+        'nume_lucrare': y['lucrare']['nume'],
+        'localitate_lucrare': y['lucrare']['localitate'],
+        'adresa_lucrare': y['lucrare']['adresa'],
+        'judet_lucrare': y['lucrare']['judet'],
+
+        'nr_cu': y['tblCU']['NrCU'],
+        'data_cu': x.get_date(y['tblCU']['DataCU']),
+        'emitent_cu': y['EmitentCU']['denumire_institutie'],
+        # Data
+        'data': y['astazi'],
+    }
+
+    cerere_EE_pdf_path = x.create_document(model_cerere, context_cerere, y['final_destination'], y['firma_proiectare']['CaleStampila'].strip('"'))
+
+    path_document_final = os.path.join(
+        path_final, director_final, f"Documentatie aviz CRAB - {y['client']['nume']} conform CU {y['tblCU']['NrCU']} din {x.get_date(y['tblCU']['DataCU'])}.pdf")
+    
+    path_document_final_print = os.path.join(path_final, director_final, f"Documentatie aviz CRAB - de printat.pdf")
+
+
+    pdf_list = [
+        cerere_EE_pdf_path,
+        y['tblCU']['CaleCU'].strip('"'),
+        y['tblCU']['CalePlanIncadrareCU'].strip('"'),
+        y['tblCU']['CalePlanSituatieCU'].strip('"'),
+        y['tblCU']['CaleMemoriuTehnicSS'].strip('"'),
+        y['tblCU']['CaleActeFacturare'].strip('"'),
+    ]
+
+    if y['lucrare']['IDClient'] != 1:
+        pdf_list.insert(-1, y['tblCU']['CaleActeBeneficiar'].strip('"'))
+
+    x.merge_pdfs(pdf_list, path_document_final)
+    x.merge_pdfs_print(pdf_list, path_document_final_print)
+
+    # PUNEM PLANUL DE SITUATIE DETALIAT
+    x.copy_file(y['tblCU']['CalePlanSituatiePDF'], path_final, director_final, 'Plan situatie.pdf')
+    x.copy_file(y['tblCU']['CalePlanSituatieDWG'], path_final, director_final, 'Plan situatie.dwg')
+
+    if os.path.exists(cerere_EE_pdf_path):
+        os.remove(cerere_EE_pdf_path)
+
+    # -----------------------------------------------------------------------------------------------
+
+    # creez EMAILUL
+
+    model_email = (r"G:\Shared drives\Root\11. DATABASE\01. Automatizari avize\MODELE\BC\16.Aviz Compania Apa Bacau\Model email.docx")
+
+    facturare = x.facturare(id_lucrare)
+
+    context_email = {
+        'nume_client': y['client']['nume'],
+        'nr_cu': y['tblCU']['NrCU'],
+        'data_cu': x.get_date(y['tblCU']['DataCU']),
+        'emitent_cu': y['EmitentCU']['denumire_institutie'],
+        'nume_lucrare': y['lucrare']['nume'],
+        'localitate_lucrare': y['lucrare']['localitate'],
+        'adresa_lucrare': y['lucrare']['adresa'],
+        'judet_lucrare': y['lucrare']['judet'],
+        'nume_client': y['client']['nume'],
+        'firma_facturare': facturare['firma_facturare'],
+        'cui_firma_facturare': facturare['cui_firma_facturare'],
+        'persoana_contact': y['contact']['nume'],
+        'telefon_contact': y['contact']['telefon'],
+    }
+
+    x.create_email(model_email, context_email, y['final_destination'])
+
+    print("\nAvizul CRAB - Bacau a fost creat \n")
+
+
+def aviz_CHIMCOMPLEX(id_lucrare, path_final):
+    director_final = '13.Aviz Chimcomplex Borzesti'
+    y = x.get_data(path_final, director_final, id_lucrare)
+
+    # -----------------------------------------------------------------------------------------------
+
+    # creez CEREREA
+
+    model_cerere = (r"G:\Shared drives\Root\11. DATABASE\01. Automatizari avize\MODELE\BC\17.Aviz CHIMCOMPLEX\Cerere CHIMCOMPLEX.docx")
+
+    context_cerere = {
+        # proiectare
+
+        'nume_firma_proiectare': y['firma_proiectare']['nume'],
+        'localitate_firma_proiectare': y['firma_proiectare']['localitate'],
+        'adresa_firma_proiectare': y['firma_proiectare']['adresa'],
+        'judet_firma_proiectare': y['firma_proiectare']['judet'],
+        'email_firma_proiectare': y['firma_proiectare']['email'],
+        'cui_firma_proiectare': y['firma_proiectare']['CUI'],
+        'nr_reg_com': y['firma_proiectare']['NrRegCom'],
+        'reprezentant_firma_proiectare': y['firma_proiectare']['reprezentant'],
+        'persoana_contact': y['contact']['nume'],
+        'telefon_contact': y['contact']['telefon'],
+        # client
+        'nume_client': y['client']['nume'],
+        'localitate_client': y['client']['localitate'],
+        'adresa_client': y['client']['adresa'],
+        'judet_client': y['client']['judet'],
+        # beneficiar
+        'nume_beneficiar': y['beneficiar']['nume'],
+        # lucrare
+        'nume_lucrare': y['lucrare']['nume'],
+        'localitate_lucrare': y['lucrare']['localitate'],
+        'adresa_lucrare': y['lucrare']['adresa'],
+        'judet_lucrare': y['lucrare']['judet'],
+        'nr_cu': y['tblCU']['NrCU'],
+        'data_cu': x.get_date(y['tblCU']['DataCU']),
+        'emitent_cu': y['EmitentCU']['denumire_institutie'],
+        # Data
+        'data': y['astazi'],
+    }
+
+
+
+    cerere_pdf_path = x.create_document(
+        model_cerere, context_cerere, y['final_destination'], y['firma_proiectare']['CaleStampila'].strip('"'))
+
+    path_document_final = os.path.join(
+        path_final, director_final, f"Documentatie Aviz Chimcomplex - {y['beneficiar']['nume']} conform CU {y['tblCU']['NrCU']} din {x.get_date(y['tblCU']['DataCU'])}.pdf")
+
+    pdf_list = [
+        cerere_pdf_path,
+        y['tblCU']['CaleCU'].strip('"'),
+        y['tblCU']['CalePlanIncadrareCU'].strip('"'),
+        y['tblCU']['CalePlanSituatieCU'].strip('"'),
+        y['tblCU']['CaleMemoriuTehnicSS'].strip('"'),
+        y['tblCU']['CaleActeFacturare'].strip('"'),
+    ]
+
+    x.merge_pdfs(pdf_list, path_document_final)
+
+    if os.path.exists(cerere_pdf_path):
+        os.remove(cerere_pdf_path)
+
+    # PUNEM PLANUL DE SITUATIE DETALIAT
+    x.copy_file(y['tblCU']['CalePlanSituatiePDF'], path_final, director_final, 'Plan situatie.pdf')
+
+
+    # -----------------------------------------------------------------------------------------------
+
+    # creez EMAILUL
+
+    model_email = (r"G:\Shared drives\Root\11. DATABASE\01. Automatizari avize\MODELE\BC\13.Aviz OAR\Model email.docx")
+    
+    facturare = x.facturare(id_lucrare)
+
+    context_email = {
+        'nume_client': y['client']['nume'],
+        'nr_cu': y['tblCU']['NrCU'],
+        'data_cu': x.get_date(y['tblCU']['DataCU']),
+        'emitent_cu': y['EmitentCU']['denumire_institutie'],
+        'nume_lucrare': y['lucrare']['nume'],
+        'localitate_lucrare': y['lucrare']['localitate'],
+        'adresa_lucrare': y['lucrare']['adresa'],
+        'judet_lucrare': y['lucrare']['judet'],
+        'nume_client': y['client']['nume'],
+        'persoana_contact': y['contact']['nume'],
+        'telefon_contact': y['contact']['telefon'],
+        'firma_facturare': facturare['firma_facturare'],
+        'cui_firma_facturare': facturare['cui_firma_facturare'],
+        
+
+    }
+
+    x.create_email(model_email, context_email, y['final_destination'])
+
+    print("\nAvizul CHIMCOMPLX Borzești a fost creat \n")
