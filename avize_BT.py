@@ -497,8 +497,7 @@ def aviz_SGA(id_lucrare, path_final):
 
     # creez CEREREA
 
-    model_cerere = (
-        'G:/Shared drives/Root/11. DATABASE/01. Automatizari avize/MODELE/BT/05. Aviz SGA/Cerere aviz SGA'f"{' - DELGAZ' if y['lucrare']['IDClient'] == 1 else ''}.docx")
+    model_cerere = (r"G:\Shared drives\Root\11. DATABASE\01. Automatizari avize\MODELE\BT\05. Aviz SGA\Cerere SGA Botosani.docx")
 
     context_cerere = {
         # proiectare
@@ -556,7 +555,7 @@ def aviz_SGA(id_lucrare, path_final):
     ]
 
 
-    x.merge_pdfs(pdf_list, path_document_final)
+    x.merge_pdfs_print(pdf_list, path_document_final)
 
     if os.path.exists(cerere_pdf_path):
         os.remove(cerere_pdf_path)
@@ -568,27 +567,12 @@ def aviz_SGA(id_lucrare, path_final):
                 director_final, 'Plan situatie.dwg')
 
     # -----------------------------------------------------------------------------------------------
+    
+    # aici copii fisierul citeste-ma.docx
+    x.copy_file("G:/Shared drives/Root/11. DATABASE/01. Automatizari avize/MODELE/BT/05. Aviz SGA/Citeste-ma.docx",
+                path_final, director_final, 'Citeste-ma.docx')
 
-    # creez EMAILUL
-
-    model_email = (
-        r"G:\Shared drives\Root\11. DATABASE\01. Automatizari avize\MODELE\BT\05. Aviz SGA\Model email.docx")
-
-    context_email = {
-        'nume_client': y['client']['nume'],
-        'nr_cu': y['tblCU']['NrCU'],
-        'data_cu': x.get_date(y['tblCU']['DataCU']),
-        'emitent_cu': y['EmitentCU']['denumire_institutie'],
-        'nume_lucrare': y['lucrare']['nume'],
-        'localitate_lucrare': y['lucrare']['localitate'],
-        'adresa_lucrare': y['lucrare']['adresa'],
-        'judet_lucrare': y['lucrare']['judet'],
-        'nume_client': y['client']['nume'],
-        'persoana_contact': y['contact']['nume'],
-        'telefon_contact': y['contact']['telefon'],
-    }
-
-    x.create_email(model_email, context_email, y['final_destination'])
+    
 
     print("\nAvizul SGA - Botosani a fost creat \n")
 
@@ -685,3 +669,288 @@ def aviz_OAR(id_lucrare, path_final):
     x.create_email(model_email, context_email, y['final_destination'])
 
     print("\nAvizul OAR - Botoșani a fost creat \n")
+
+
+def aviz_Nova_Apaserv(id_lucrare, path_final):
+    director_final = '10.Aviz Nova Apaserv'
+    y = x.get_data(path_final, director_final, id_lucrare)
+
+    # -----------------------------------------------------------------------------------------------
+
+    # creez CEREREA
+
+    model_cerere = (
+        'G:/Shared drives/Root/11. DATABASE/01. Automatizari avize/MODELE/BT/10.Aviz Nova Apaserv/'f"Cerere Nova Apaserv{' - DELGAZ' if y['lucrare']['IDClient'] == 1 else ''}.docx")
+    
+    context_cerere = {
+        # proiectare
+
+        'nume_firma_proiectare': y['firma_proiectare']['nume'],
+        'localitate_firma_proiectare': y['firma_proiectare']['localitate'],
+        'adresa_firma_proiectare': y['firma_proiectare']['adresa'],
+        'judet_firma_proiectare': y['firma_proiectare']['judet'],
+        'email_firma_proiectare': y['firma_proiectare']['email'],
+        'cui_firma_proiectare': y['firma_proiectare']['CUI'],
+        'nr_reg_com': y['firma_proiectare']['NrRegCom'],
+        'reprezentant_firma_proiectare': y['firma_proiectare']['reprezentant'],
+        'persoana_contact': y['contact']['nume'],
+        'telefon_contact': y['contact']['telefon'],
+        # client
+        'nume_client': y['client']['nume'],
+
+        # beneficiar
+        'nume_beneficiar': y['beneficiar']['nume'],
+        # lucrare
+        'nume_lucrare': y['lucrare']['nume'],
+        'localitate_lucrare': y['lucrare']['localitate'],
+        'adresa_lucrare': y['lucrare']['adresa'],
+        'judet_lucrare': y['lucrare']['judet'],
+
+        # Data
+        'data': y['astazi'],
+    }
+
+    cerere_pdf_path = x.create_document(
+        model_cerere, context_cerere, y['final_destination'], y['firma_proiectare']['CaleStampila'].strip('"'))
+
+    path_document_final = os.path.join(
+        path_final, director_final, f"Documentatie Aviz Nova Apaserv - {y['client']['nume']} conform CU {y['tblCU']['NrCU']} din {x.get_date(y['tblCU']['DataCU'])}.pdf")
+
+    pdf_list = [
+        cerere_pdf_path,
+        y['tblCU']['CaleCU'].strip('"'),
+        y['tblCU']['CalePlanIncadrareCU'].strip('"'),
+        y['tblCU']['CalePlanSituatieCU'].strip('"'),
+        y['tblCU']['CaleMemoriuTehnicSS'].strip('"'),
+        y['tblCU']['CaleActeFacturare'].strip('"'),
+    ]
+
+    if y['lucrare']['IDClient'] != 1:
+        pdf_list.insert(-1, y['tblCU']['CaleActeBeneficiar'].strip('"'))
+
+    x.merge_pdfs(pdf_list, path_document_final)
+
+    # PUNEM PLANUL DE SITUATIE DETALIAT
+
+    x.copy_file(y['tblCU']['CalePlanSituatiePDF'], path_final,
+                director_final, 'Plan situatie.pdf')
+    x.copy_file(y['tblCU']['CalePlanSituatieDWG'], path_final,
+                director_final, 'Plan situatie.dwg')
+
+    if os.path.exists(cerere_pdf_path):
+        os.remove(cerere_pdf_path)
+
+    # -----------------------------------------------------------------------------------------------
+
+    # creez EMAILUL
+
+    model_email = (r"G:\Shared drives\Root\11. DATABASE\01. Automatizari avize\MODELE\BT\10.Aviz Nova Apaserv\Model email.docx")
+
+    facturare = x.facturare(id_lucrare)
+
+    context_email = {
+        'nume_client': y['client']['nume'],
+        'nr_cu': y['tblCU']['NrCU'],
+        'data_cu': x.get_date(y['tblCU']['DataCU']),
+        'emitent_cu': y['EmitentCU']['denumire_institutie'],
+        'nume_lucrare': y['lucrare']['nume'],
+        'localitate_lucrare': y['lucrare']['localitate'],
+        'adresa_lucrare': y['lucrare']['adresa'],
+        'judet_lucrare': y['lucrare']['judet'],
+        'nume_client': y['client']['nume'],
+        'firma_facturare': facturare['firma_facturare'],
+        'cui_firma_facturare': facturare['cui_firma_facturare'],
+        'persoana_contact': y['contact']['nume'],
+        'telefon_contact': y['contact']['telefon'],
+    }
+
+    x.create_email(model_email, context_email, y['final_destination'])
+
+    print("\n Avizul Nova Apaserv a fost creat \n")
+
+
+def aviz_Cultura(id_lucrare, path_final):
+    director_final = '11.Aviz Cultura - Botosani'
+    y = x.get_data(path_final, director_final, id_lucrare)
+
+    # -----------------------------------------------------------------------------------------------
+
+    # creez CEREREA
+
+    model_cerere = (
+        'G:/Shared drives/Root/11. DATABASE/01. Automatizari avize/MODELE/BT/11.Aviz Cultura Botosani/'f"Cerere Cultura{' - DELGAZ' if y['lucrare']['IDClient'] == 1 else ''}.docx")
+
+    calcul = float(y['tblCU']['SuprafataOcupata']) * 3.00
+    total_aviz = round(calcul, 2)
+
+    context_cerere = {
+        # proiectare
+
+        'nume_firma_proiectare': y['firma_proiectare']['nume'],
+        'localitate_firma_proiectare': y['firma_proiectare']['localitate'],
+        'adresa_firma_proiectare': y['firma_proiectare']['adresa'],
+        'judet_firma_proiectare': y['firma_proiectare']['judet'],
+        'email_firma_proiectare': y['firma_proiectare']['email'],
+        'cui_firma_proiectare': y['firma_proiectare']['CUI'],
+        'nr_reg_com': y['firma_proiectare']['NrRegCom'],
+        'reprezentant_firma_proiectare': y['firma_proiectare']['reprezentant'],
+        'persoana_contact': y['contact']['nume'],
+        'telefon_contact': y['contact']['telefon'],
+        # client
+        'nume_client': y['client']['nume'],
+        # beneficiar
+        'nume_beneficiar': y['beneficiar']['nume'],
+        # lucrare
+        'nume_lucrare': y['lucrare']['nume'],
+        'localitate_lucrare': y['lucrare']['localitate'],
+        'adresa_lucrare': y['lucrare']['adresa'],
+        'judet_lucrare': y['lucrare']['judet'],
+        'nr_cu': y['tblCU']['NrCU'],
+        'data_cu': x.get_date(y['tblCU']['DataCU']),
+        'emitent_cu': y['EmitentCU']['denumire_institutie'],
+        'sup_mp': y['tblCU']['SuprafataOcupata'],
+        'total_aviz': total_aviz,
+        # Data
+        'data': y['astazi'],
+    }
+
+    cerere_pdf_path = x.create_document(
+        model_cerere, context_cerere, y['final_destination'], y['firma_proiectare']['CaleStampila'].strip('"'))
+
+    path_document_final = os.path.join(
+        path_final, director_final, f"Documentatie aviz Cultura - {y['client']['nume']} conform CU {y['tblCU']['NrCU']} din {x.get_date(y['tblCU']['DataCU'])}.pdf")
+
+    path_document_printabil = os.path.join(
+        path_final, director_final, f"Documentatie aviz Cultura - DE PRINTAT.pdf")
+
+    pdf_list = [
+        cerere_pdf_path,
+        y['tblCU']['CaleCU'].strip('"'),
+        y['tblCU']['CalePlanIncadrareCU'].strip('"'),
+        y['tblCU']['CalePlanSituatieCU'].strip('"'),
+        y['tblCU']['CaleMemoriuTehnicSS'].strip('"'),
+        y['tblCU']['CaleActeFacturare'].strip('"'),
+    ]
+
+    x.merge_pdfs(pdf_list, path_document_final)
+    x.merge_pdfs_print(pdf_list, path_document_printabil)
+
+    if os.path.exists(cerere_pdf_path):
+        os.remove(cerere_pdf_path)
+    
+    # -----------------------------------------------------------------------------------------------
+
+    # creez EMAILUL
+
+    model_email = (r"G:\Shared drives\Root\11. DATABASE\01. Automatizari avize\MODELE\BT\11.Aviz Cultura Botosani\Model email.docx")
+
+    facturare = x.facturare(id_lucrare)
+
+    context_email = {
+        'nume_client': y['client']['nume'],
+        'nr_cu': y['tblCU']['NrCU'],
+        'data_cu': x.get_date(y['tblCU']['DataCU']),
+        'emitent_cu': y['EmitentCU']['denumire_institutie'],
+        'nume_lucrare': y['lucrare']['nume'],
+        'localitate_lucrare': y['lucrare']['localitate'],
+        'adresa_lucrare': y['lucrare']['adresa'],
+        'judet_lucrare': y['lucrare']['judet'],
+        'nume_client': y['client']['nume'],
+        'firma_facturare': facturare['firma_facturare'],
+        'cui_firma_facturare': facturare['cui_firma_facturare'],
+        'persoana_contact': y['contact']['nume'],
+        'telefon_contact': y['contact']['telefon'],
+    }
+
+    x.create_email(model_email, context_email, y['final_destination'])
+
+    print("\n Avizul Cultura Botoșani a fost creat \n")
+
+
+def aviz_Biroul_Rutier(id_lucrare, path_final):
+    director_final = '09.Aviz Biroul Rutier'
+    y = x.get_data(path_final, director_final, id_lucrare)
+
+    # -----------------------------------------------------------------------------------------------
+
+    # creez CEREREA
+
+    model_cerere = (r"G:\Shared drives\Root\11. DATABASE\01. Automatizari avize\MODELE\BT\09.Aviz Politia Rutiera\Cerere Politia.docx")
+    
+    context_cerere = {
+        # proiectare
+
+        'nume_firma_proiectare': y['firma_proiectare']['nume'],
+        'localitate_firma_proiectare': y['firma_proiectare']['localitate'],
+        'adresa_firma_proiectare': y['firma_proiectare']['adresa'],
+        'judet_firma_proiectare': y['firma_proiectare']['judet'],
+
+        'email_firma_proiectare': y['firma_proiectare']['email'],
+        'cui_firma_proiectare': y['firma_proiectare']['CUI'],
+        'nr_reg_com': y['firma_proiectare']['NrRegCom'],
+        'reprezentant_firma_proiectare': y['firma_proiectare']['reprezentant'],
+        'persoana_contact': y['contact']['nume'],
+        'telefon_contact': y['contact']['telefon'],
+        # client
+        'nume_client': y['client']['nume'],
+
+        # beneficiar
+        'nume_beneficiar': y['beneficiar']['nume'],
+        # lucrare
+        'nume_lucrare': y['lucrare']['nume'],
+        'localitate_lucrare': y['lucrare']['localitate'],
+        'adresa_lucrare': y['lucrare']['adresa'],
+        'judet_lucrare': y['lucrare']['judet'],
+
+        # Data
+        'data': y['astazi'],
+    }
+
+    cerere_pdf_path = x.create_document(
+        model_cerere, context_cerere, y['final_destination'], y['firma_proiectare']['CaleStampila'].strip('"'))
+
+    path_document_final = os.path.join(
+        path_final, director_final, f"Documentatie Aviz Principiu Politia Rutiera - {y['client']['nume']} conform CU {y['tblCU']['NrCU']} din {x.get_date(y['tblCU']['DataCU'])}.pdf")
+
+    pdf_list = [
+        cerere_pdf_path,
+        y['tblCU']['CaleChitantaPolitie'].strip('"'),
+        y['tblCU']['CaleCU'].strip('"'),
+        y['tblCU']['CalePlanIncadrareCU'].strip('"'),
+        y['tblCU']['CalePlanSituatieCU'].strip('"'),
+        y['tblCU']['CaleMemoriuTehnicSS'].strip('"'),
+        y['tblCU']['CaleActeFacturare'].strip('"'),
+        y['tblCU']['CaleActeBeneficiar'].strip('"'),
+    ]
+
+
+    x.merge_pdfs(pdf_list, path_document_final)
+
+
+    if os.path.exists(cerere_pdf_path):
+        os.remove(cerere_pdf_path)
+
+    # -----------------------------------------------------------------------------------------------
+
+    # creez EMAILUL
+
+    model_email = (r"G:\Shared drives\Root\11. DATABASE\01. Automatizari avize\MODELE\BT\09.Aviz Politia Rutiera\Model email.docx")
+
+
+    context_email = {
+        'nume_client': y['client']['nume'],
+        'nr_cu': y['tblCU']['NrCU'],
+        'data_cu': x.get_date(y['tblCU']['DataCU']),
+        'emitent_cu': y['EmitentCU']['denumire_institutie'],
+        'nume_lucrare': y['lucrare']['nume'],
+        'localitate_lucrare': y['lucrare']['localitate'],
+        'adresa_lucrare': y['lucrare']['adresa'],
+        'judet_lucrare': y['lucrare']['judet'],
+        'nume_client': y['client']['nume'],
+        'persoana_contact': y['contact']['nume'],
+        'telefon_contact': y['contact']['telefon'],
+    }
+
+    x.create_email(model_email, context_email, y['final_destination'])
+
+    print("\n Avizul Biroul Rutier Botoșani a fost creat \n")

@@ -1,13 +1,13 @@
 import avize_BC as depune_la_bacau
 
 
-id_lucrare = 23
+id_lucrare = 66
 
-path_final = r"G:\Shared drives\Root\11. DATABASE\Pentru CRISTI"
+path_final = r"G:\Shared drives\Root\11. DATABASE\Pentru Marian"
 
  
 
-depune_la_bacau.aviz_APM(id_lucrare, path_final)
+# depune_la_bacau.aviz_APM(id_lucrare, path_final)
 
 # depune_la_bacau.aviz_EE_Delgaz(id_lucrare, path_final)
 
@@ -15,7 +15,7 @@ depune_la_bacau.aviz_APM(id_lucrare, path_final)
 
 # depune_la_bacau.aviz_Orange(id_lucrare, path_final)
 
-# depune_la_bacau.aviz_HCL(id_lucrare, path_final)
+depune_la_bacau.aviz_HCL(id_lucrare, path_final)
 
 # depune_la_bacau.aviz_SGA(id_lucrare, path_final)
 

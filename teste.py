@@ -22,7 +22,7 @@ ce_date_sunt = fetch_single_value(
 
 print(float(round(ce_date_sunt, 2))*0.01)
 
-# data_asta = x.get_date(ce_date_sunt)
+# data_asta = x.get_date(ce_date_sunt) 
 
 # new_date = ce_date_sunt + relativedelta(months=6)
 # formatted_date = new_date.strftime('%d-%m-%Y')

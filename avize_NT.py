@@ -608,7 +608,7 @@ def aviz_Luxten(id_lucrare, path_final):
 
     model_email = (
         r"G:\Shared drives\Root\11. DATABASE\01. Automatizari avize\MODELE\NT\06.Aviz Luxten\Model email.docx")
-    
+
     facturare = x.facturare(id_lucrare)
 
     context_email = {
@@ -623,7 +623,7 @@ def aviz_Luxten(id_lucrare, path_final):
         'judet_lucrare': y['lucrare']['judet'],
         'nume_client': y['client']['nume'],
         'persoana_contact': y['contact']['nume'],
-        'telefon_contact': y['contact']['telefon'],        
+        'telefon_contact': y['contact']['telefon'],
         'firma_facturare': facturare['firma_facturare'],
         'cui_firma_facturare': facturare['cui_firma_facturare'],
     }
@@ -1060,7 +1060,7 @@ def aviz_TransGaz(id_lucrare, path_final):
 
     model_email = (
         r"G:\Shared drives\Root\11. DATABASE\01. Automatizari avize\MODELE\NT\11. Aviz TransGaz\Model email.docx")
-    
+
     facturare = x.facturare(id_lucrare)
 
     context_email = {
@@ -1077,7 +1077,7 @@ def aviz_TransGaz(id_lucrare, path_final):
         'telefon_contact': y['contact']['telefon'],
         'firma_facturare': facturare['firma_facturare'],
         'cui_firma_facturare': facturare['cui_firma_facturare'],
-        
+
 
     }
 
@@ -1165,7 +1165,7 @@ def aviz_Cultura(id_lucrare, path_final):
 
     model_email = (
         r"G:\Shared drives\Root\11. DATABASE\01. Automatizari avize\MODELE\NT\12. Aviz Cultura - Neamt\Model email.docx")
-    
+
     facturare = x.facturare(id_lucrare)
 
     context_email = {
@@ -1315,7 +1315,7 @@ def aviz_HCL(id_lucrare, path_final):
         y['tblCU']['CalePlanSituatieCU'].strip('"'),
         y['tblCU']['CaleMemoriuTehnicSS'].strip('"'),
         y['tblCU']['CaleActeFacturare'].strip('"'),
-        ]
+    ]
 
     with os.scandir(y['tblCU']['CaleExtraseCF'].strip('"')) as entries:
         for entry in entries:
@@ -1334,7 +1334,6 @@ def aviz_HCL(id_lucrare, path_final):
         os.remove(cerere_HCL_pdf_path)
 
     print("\nAvizul HCL a fost creat \n")
-
 
 
 def aviz_GN_Prisma_Serv(id_lucrare, path_final):
@@ -1411,7 +1410,8 @@ def aviz_GN_Prisma_Serv(id_lucrare, path_final):
 
     # creez EMAILUL
 
-    model_email = ("G:/Shared drives/Root/11. DATABASE/01. Automatizari avize/MODELE/NT/16.Aviz GN - Prisma Serv/Model email.docx")
+    model_email = (
+        "G:/Shared drives/Root/11. DATABASE/01. Automatizari avize/MODELE/NT/16.Aviz GN - Prisma Serv/Model email.docx")
 
     facturare = x.facturare(id_lucrare)
 
@@ -1437,7 +1437,6 @@ def aviz_GN_Prisma_Serv(id_lucrare, path_final):
     print("\nAvizul GN - Prisma Serv Company - Neamț a fost creat \n")
 
 
-
 def aviz_OAR(id_lucrare, path_final):
     director_final = '20.Aviz OAR - Neamt'
     y = x.get_data(path_final, director_final, id_lucrare)
@@ -1446,7 +1445,8 @@ def aviz_OAR(id_lucrare, path_final):
 
     # creez CEREREA
 
-    model_cerere = (r"G:\Shared drives\Root\11. DATABASE\01. Automatizari avize\MODELE\NT\20.Aviz OAR\Cerere OAR.docx")
+    model_cerere = (
+        r"G:\Shared drives\Root\11. DATABASE\01. Automatizari avize\MODELE\NT\20.Aviz OAR\Cerere OAR.docx")
 
     context_cerere = {
         # proiectare
@@ -1503,13 +1503,12 @@ def aviz_OAR(id_lucrare, path_final):
     x.copy_file(y['tblCU']['CalePlanSituatiePDF'], path_final,
                 director_final, 'Plan situatie.pdf')
 
-
     # -----------------------------------------------------------------------------------------------
 
     # creez EMAILUL
 
-    model_email = (r"G:\Shared drives\Root\11. DATABASE\01. Automatizari avize\MODELE\NT\20.Aviz OAR\Model email.docx")
-    
+    model_email = (
+        r"G:\Shared drives\Root\11. DATABASE\01. Automatizari avize\MODELE\NT\20.Aviz OAR\Model email.docx")
 
     context_email = {
         'nume_client': y['client']['nume'],
@@ -1523,14 +1522,13 @@ def aviz_OAR(id_lucrare, path_final):
         'nume_client': y['client']['nume'],
         'persoana_contact': y['contact']['nume'],
         'telefon_contact': y['contact']['telefon'],
-        
+
 
     }
 
     x.create_email(model_email, context_email, y['final_destination'])
 
     print("\nAvizul OAR - Neamț a fost creat \n")
-
 
 
 def aviz_Transelectrica(id_lucrare, path_final):
@@ -1608,17 +1606,18 @@ def aviz_Transelectrica(id_lucrare, path_final):
 
     # PUNEM PLANUL DE SITUATIE DETALIAT
     if y['tblCU']['CalePlanSituatiePDF']:
-        x.copy_file(y['tblCU']['CalePlanSituatiePDF'], path_final, director_final, 'Plan situatie.pdf')
+        x.copy_file(y['tblCU']['CalePlanSituatiePDF'],
+                    path_final, director_final, 'Plan situatie.pdf')
     if y['tblCU']['CalePlanSituatieDWG']:
-        x.copy_file(y['tblCU']['CalePlanSituatieDWG'], path_final, director_final, 'Plan situatie.dwg')
+        x.copy_file(y['tblCU']['CalePlanSituatieDWG'],
+                    path_final, director_final, 'Plan situatie.dwg')
 
     # -----------------------------------------------------------------------------------------------
 
     # creez EMAILUL
 
-    model_email = (r"G:\Shared drives\Root\11. DATABASE\01. Automatizari avize\MODELE\NT\13.Aviz Transelectrica\Model email.docx")
-
-    
+    model_email = (
+        r"G:\Shared drives\Root\11. DATABASE\01. Automatizari avize\MODELE\NT\13.Aviz Transelectrica\Model email.docx")
 
     context_email = {
         'nume_client': y['client']['nume'],
@@ -1641,7 +1640,6 @@ def aviz_Transelectrica(id_lucrare, path_final):
     print("\n Avizul Transelectrica a fost creat \n")
 
 
-
 def aviz_Edil_Industry(id_lucrare, path_final):
     director_final = '22.Aviz Salubritate - Edil Industry'
     y = x.get_data(path_final, director_final, id_lucrare)
@@ -1650,7 +1648,8 @@ def aviz_Edil_Industry(id_lucrare, path_final):
 
     # creez CEREREA
 
-    model_cerere = (r"G:\Shared drives\Root\11. DATABASE\01. Automatizari avize\MODELE\NT\22.Aviz Salubritate - Edil Industry\Cerere aviz Edil.docx")
+    model_cerere = (
+        r"G:\Shared drives\Root\11. DATABASE\01. Automatizari avize\MODELE\NT\22.Aviz Salubritate - Edil Industry\Cerere aviz Edil.docx")
 
     context_cerere = {
         # proiectare
@@ -1708,7 +1707,8 @@ def aviz_Edil_Industry(id_lucrare, path_final):
 
     # creez EMAILUL
 
-    model_email = (r"G:\Shared drives\Root\11. DATABASE\01. Automatizari avize\MODELE\NT\22.Aviz Salubritate - Edil Industry\Model email.docx")
+    model_email = (
+        r"G:\Shared drives\Root\11. DATABASE\01. Automatizari avize\MODELE\NT\22.Aviz Salubritate - Edil Industry\Model email.docx")
 
     context_email = {
         'nume_client': y['client']['nume'],
@@ -1729,7 +1729,6 @@ def aviz_Edil_Industry(id_lucrare, path_final):
     print("\n Avizul preluare deseuri - EDIL INDUSTRY SRL \n")
 
 
-
 def negatie_DSP(id_lucrare, path_final):
     director_final = '21.Negatie DSP - Neamt'
     y = x.get_data(path_final, director_final, id_lucrare)
@@ -1738,7 +1737,8 @@ def negatie_DSP(id_lucrare, path_final):
 
     # creez CEREREA
 
-    model_cerere = (r"G:\Shared drives\Root\11. DATABASE\01. Automatizari avize\MODELE\NT\21.Negatie DSP\Adresa DSP Neamt.docx")
+    model_cerere = (
+        r"G:\Shared drives\Root\11. DATABASE\01. Automatizari avize\MODELE\NT\21.Negatie DSP\Adresa DSP Neamt.docx")
 
     context_cerere = {
         # proiectare
@@ -1793,13 +1793,14 @@ def negatie_DSP(id_lucrare, path_final):
         os.remove(cerere_pdf_path)
 
     # PUNEM PLANUL DE SITUATIE DETALIAT
-    x.copy_file(y['tblCU']['CalePlanSituatiePDF'], path_final, director_final, 'Plan situatie.pdf')
-
+    x.copy_file(y['tblCU']['CalePlanSituatiePDF'], path_final,
+                director_final, 'Plan situatie.pdf')
 
     # -----------------------------------------------------------------------------------------------
 
     # creez EMAILUL
 
-    x.copy_file("G:/Shared drives/Root/11. DATABASE/01. Automatizari avize/MODELE/NT/21.Negatie DSP/Citeste-ma.docx", path_final, director_final, 'Citeste-ma.docx')
+    x.copy_file("G:/Shared drives/Root/11. DATABASE/01. Automatizari avize/MODELE/NT/21.Negatie DSP/Citeste-ma.docx",
+                path_final, director_final, 'Citeste-ma.docx')
 
     print("\n Documentatia de negatie DSP - Neamț a fost creată \n")

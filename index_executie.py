@@ -1,9 +1,9 @@
 import functii_executie as genereaza
 
 
-id_lucrare = 27
+id_lucrare = 63
 
-path_final = r"G:\Shared drives\Root\11. DATABASE\Pentru CRISTI\Februarie"
+path_final = r"G:\Shared drives\Root\11. DATABASE\Pentru CRISTI\Martie"
 
 
 
@@ -27,5 +27,11 @@ path_final = r"G:\Shared drives\Root\11. DATABASE\Pentru CRISTI\Februarie"
 # genereaza.anunt_UAT_finalizare(id_lucrare, path_final)
 
 
-        # finalizare la primarii de cartier
-genereaza.anunt_UAT_declaratie_ITL(id_lucrare, path_final)
+        # finalizare la primarii de cartier - cand e ok o singura documentatie
+# genereaza.anunt_UAT_declaratie_ITL(id_lucrare, path_final)
+
+
+        # pentru FINALIZARE la Primariile de cartier cand trebuie doua documentații separate
+
+genereaza.anunt_UAT_provincie(id_lucrare, path_final)
+genereaza.declaratie_ITL_provincie(id_lucrare, path_final)
