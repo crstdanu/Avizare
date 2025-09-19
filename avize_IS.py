@@ -1768,7 +1768,7 @@ def aviz_Nomenclatura(id_lucrare, path_final):
 
 
 def aviz_OAR(id_lucrare, path_final):
-    director_final = '22.Aviz OAR - Neamt'
+    director_final = '22.Aviz OAR - Iasi'
     y = x.get_data(path_final, director_final, id_lucrare)
 
     # -----------------------------------------------------------------------------------------------
@@ -2051,3 +2051,236 @@ def aviz_Evidenta_Patrimoniu(id_lucrare, path_final):
         os.remove(cerere_pdf_path)
 
     print("\nAvizul Evidenta Patrimoniu a fost creat \n")
+
+
+def aviz_Salubritate_GIREXIM(id_lucrare, path_final):
+    director_final = '26.Aviz Salubritate GIREXIM'
+    y = x.get_data(path_final, director_final, id_lucrare)
+
+    # -----------------------------------------------------------------------------------------------
+
+    # creez CEREREA
+
+    model_cerere = (
+        'G:/Shared drives/Root/11. DATABASE/01. Automatizari avize/MODELE/IS/26. Aviz Girexim/'f"Model aviz Girexim{' - GENERAL TEHNIC' if y['lucrare']['IDFirmaProiectare'] == 3 else ' - PROING SERV' if y['lucrare']['IDFirmaProiectare'] == 4 else ' - ROGOTEHNIC'}.docx")
+
+    context_cerere = {
+        # proiectare
+
+        'nume_firma_proiectare': y['firma_proiectare']['nume'],
+        'localitate_firma_proiectare': y['firma_proiectare']['localitate'],
+        'adresa_firma_proiectare': y['firma_proiectare']['adresa'],
+        'judet_firma_proiectare': y['firma_proiectare']['judet'],
+        'email_firma_proiectare': y['firma_proiectare']['email'],
+        'cui_firma_proiectare': y['firma_proiectare']['CUI'],
+        'nr_reg_com': y['firma_proiectare']['NrRegCom'],
+        'reprezentant_firma_proiectare': y['firma_proiectare']['reprezentant'],
+        'persoana_contact': y['contact']['nume'],
+        'telefon_contact': y['contact']['telefon'],
+        # client
+        'nume_client': y['client']['nume'],
+        'localitate_client': y['client']['localitate'],
+        'adresa_client': y['client']['adresa'],
+        'judet_client': y['client']['judet'],
+        # beneficiar
+        'nume_beneficiar': y['beneficiar']['nume'],
+        # lucrare
+        'nume_lucrare': y['lucrare']['nume'],
+        'localitate_lucrare': y['lucrare']['localitate'],
+        'adresa_lucrare': y['lucrare']['adresa'],
+        'judet_lucrare': y['lucrare']['judet'],
+        'nr_cu': y['tblCU']['NrCU'],
+        'data_cu': x.get_date(y['tblCU']['DataCU']),
+        'emitent_cu': y['EmitentCU']['denumire_institutie'],
+        # Data
+        'data': y['astazi'],
+    }
+
+    cerere_PMI_SEn_pdf_path = x.create_document(
+        model_cerere, context_cerere, y['final_destination'], y['firma_proiectare']['CaleStampila'].strip('"'))
+
+    path_document_final = os.path.join(
+        path_final, director_final, f"Documentatie aviz Salubritate Girexim  - {y['client']['nume']} conform CU {y['tblCU']['NrCU']} din {x.get_date(y['tblCU']['DataCU'])}.pdf")
+
+    pdf_list = [
+        cerere_PMI_SEn_pdf_path,
+        y['tblCU']['CaleCU'].strip('"'),
+        y['tblCU']['CalePlanIncadrareCU'].strip('"'),
+        y['tblCU']['CalePlanSituatieCU'].strip('"'),
+        y['tblCU']['CaleMemoriuTehnicSS'].strip('"'),
+        y['tblCU']['CaleActeFacturare'].strip('"'),
+    ]
+
+    x.merge_pdfs(pdf_list, path_document_final)
+
+    if os.path.exists(cerere_PMI_SEn_pdf_path):
+        os.remove(cerere_PMI_SEn_pdf_path)
+
+    # -----------------------------------------------------------------------------------------------
+
+    # creez EMAILUL
+
+    model_email = (
+        r"G:\Shared drives\Root\11. DATABASE\01. Automatizari avize\MODELE\IS\26. Aviz Girexim\Model email.docx")
+
+    context_email = {
+        'nume_client': y['client']['nume'],
+        'nr_cu': y['tblCU']['NrCU'],
+        'data_cu': x.get_date(y['tblCU']['DataCU']),
+        'emitent_cu': y['EmitentCU']['denumire_institutie'],
+        'nume_lucrare': y['lucrare']['nume'],
+        'localitate_lucrare': y['lucrare']['localitate'],
+        'adresa_lucrare': y['lucrare']['adresa'],
+        'judet_lucrare': y['lucrare']['judet'],
+        'nume_client': y['client']['nume'],
+        'persoana_contact': y['contact']['nume'],
+        'telefon_contact': y['contact']['telefon'],
+    }
+
+    x.create_email(model_email, context_email, y['final_destination'])
+
+    print("\nAvizul Salubritate - Girexim a fost creat \n")
+
+
+
+def aviz_CFR(id_lucrare, path_final):
+    director_final = '21.Aviz CFR'
+    y = x.get_data(path_final, director_final, id_lucrare)
+
+    # -----------------------------------------------------------------------------------------------
+
+    # creez CEREREA
+
+    model_cerere = (
+        'G:/Shared drives/Root/11. DATABASE/01. Automatizari avize/MODELE/IS/21. Aviz CFR/'f"Cerere CFR{' - DELGAZ' if y['lucrare']['IDClient'] == 1 else ''}.docx")
+
+    context_cerere = {
+        # proiectare
+        'nume_firma_proiectare': y['firma_proiectare']['nume'],
+        'localitate_firma_proiectare': y['firma_proiectare']['localitate'],
+        'adresa_firma_proiectare': y['firma_proiectare']['adresa'],
+        'judet_firma_proiectare': y['firma_proiectare']['judet'],
+        'email_firma_proiectare': y['firma_proiectare']['email'],
+        'cui_firma_proiectare': y['firma_proiectare']['CUI'],
+        'nr_reg_com': y['firma_proiectare']['NrRegCom'],
+        'reprezentant_firma_proiectare': y['firma_proiectare']['reprezentant'],
+        'persoana_contact': y['contact']['nume'],
+        'telefon_contact': y['contact']['telefon'],
+        # client
+        'nume_client': y['client']['nume'],
+        'localitate_client': y['client']['localitate'],
+        'adresa_client': y['client']['adresa'],
+        'judet_client': y['client']['judet'],
+        # beneficiar
+        'nume_beneficiar': y['beneficiar']['nume'],
+        # lucrare
+        'nume_lucrare': y['lucrare']['nume'],
+        'localitate_lucrare': y['lucrare']['localitate'],
+        'adresa_lucrare': y['lucrare']['adresa'],
+        'judet_lucrare': y['lucrare']['judet'],
+        'nr_cu': y['tblCU']['NrCU'],
+        'data_cu': x.get_date(y['tblCU']['DataCU']),
+        'emitent_cu': y['EmitentCU']['denumire_institutie'],
+        # Data
+        'data': y['astazi'],
+    }
+
+    cerere_CTP_pdf_path = x.create_document(
+        model_cerere, context_cerere, y['final_destination'], y['firma_proiectare']['CaleStampila'].strip('"'))
+
+    path_document_final = os.path.join(path_final, director_final, f"Documentatie aviz CFR - DE PRINTAT.pdf")
+
+    pdf_list = [
+        cerere_CTP_pdf_path,
+        y['tblCU']['CaleCU'].strip('"'),
+        y['tblCU']['CalePlanIncadrareCU'].strip('"'),
+        y['tblCU']['CalePlanIncadrareCU'].strip('"'),
+        y['tblCU']['CalePlanSituatieCU'].strip('"'),
+        y['tblCU']['CalePlanSituatieCU'].strip('"'),
+        y['tblCU']['CaleMemoriuTehnicSS'].strip('"'),
+        y['tblCU']['CaleActeFacturare'].strip('"'),
+    ]
+
+    x.merge_pdfs_print(pdf_list, path_document_final)
+
+    x.copy_file("G:/Shared drives/Root/11. DATABASE/01. Automatizari avize/MODELE/IS/21. Aviz CFR/Citeste-ma.docx",
+                path_final, director_final, 'Citeste-ma.docx')
+
+    if os.path.exists(cerere_CTP_pdf_path):
+        os.remove(cerere_CTP_pdf_path)
+
+    print("\nAvizul CFR a fost creat \n")
+
+
+
+def aviz_Transelectrica(id_lucrare, path_final):
+    director_final = '27.Aviz Transelectrica'
+    y = x.get_data(path_final, director_final, id_lucrare)
+
+    # -----------------------------------------------------------------------------------------------
+
+    # creez CEREREA
+
+    model_cerere = (
+        'G:/Shared drives/Root/11. DATABASE/01. Automatizari avize/MODELE/IS/27. Aviz TransElectrica/'f"Cerere TransElectrica{' - DELGAZ' if y['lucrare']['IDClient'] == 1 else ''}.docx")
+
+    context_cerere = {
+        # proiectare
+        'nume_firma_proiectare': y['firma_proiectare']['nume'],
+        'localitate_firma_proiectare': y['firma_proiectare']['localitate'],
+        'adresa_firma_proiectare': y['firma_proiectare']['adresa'],
+        'judet_firma_proiectare': y['firma_proiectare']['judet'],
+        'email_firma_proiectare': y['firma_proiectare']['email'],
+        'cui_firma_proiectare': y['firma_proiectare']['CUI'],
+        'nr_reg_com': y['firma_proiectare']['NrRegCom'],
+        'reprezentant_firma_proiectare': y['firma_proiectare']['reprezentant'],
+        'serie_ci': y['firma_proiectare']['seria_CI'], 
+        'nr_ci': y['firma_proiectare']['nr_CI'], 
+        'cnp_repr': y['firma_proiectare']['cnp_repr'], 
+
+        'persoana_contact': y['contact']['nume'],
+        'telefon_contact': y['contact']['telefon'],
+        # client
+        'nume_client': y['client']['nume'],
+        'localitate_client': y['client']['localitate'],
+        'adresa_client': y['client']['adresa'],
+        'judet_client': y['client']['judet'],
+        # beneficiar
+        'nume_beneficiar': y['beneficiar']['nume'],
+        # lucrare
+        'nume_lucrare': y['lucrare']['nume'],
+        'localitate_lucrare': y['lucrare']['localitate'],
+        'adresa_lucrare': y['lucrare']['adresa'],
+        'judet_lucrare': y['lucrare']['judet'],
+        'nr_cu': y['tblCU']['NrCU'],
+        'data_cu': x.get_date(y['tblCU']['DataCU']),
+        'emitent_cu': y['EmitentCU']['denumire_institutie'],
+        # Data
+        'data': y['astazi'],
+    }
+
+    cerere_pdf_path = x.create_document(
+        model_cerere, context_cerere, y['final_destination'], y['firma_proiectare']['CaleStampila'].strip('"'))
+
+    path_document_final = os.path.join(path_final, director_final, f"Documentatie aviz TransElectrica - DE PRINTAT.pdf")
+
+    pdf_list = [
+        cerere_pdf_path,
+        y['tblCU']['CaleCU'].strip('"'),
+        y['tblCU']['CalePlanIncadrareCU'].strip('"'),
+        y['tblCU']['CalePlanIncadrareCU'].strip('"'),
+        y['tblCU']['CalePlanSituatieCU'].strip('"'),
+        y['tblCU']['CalePlanSituatieCU'].strip('"'),
+        y['tblCU']['CaleMemoriuTehnicSS'].strip('"'),
+        y['tblCU']['CaleActeFacturare'].strip('"'),
+    ]
+
+    x.merge_pdfs_print(pdf_list, path_document_final)
+
+    x.copy_file("G:/Shared drives/Root/11. DATABASE/01. Automatizari avize/MODELE/IS/27. Aviz TransElectrica/Citeste-ma.docx",
+                path_final, director_final, 'Citeste-ma.docx')
+
+    if os.path.exists(cerere_pdf_path):
+        os.remove(cerere_pdf_path)
+
+    print("\nAvizul TransElectrica a fost creat \n")

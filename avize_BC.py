@@ -73,30 +73,30 @@ def aviz_APM(id_lucrare, path_final):
 
     # -----------------------------------------------------------------------------------------------
 
-    # creez EMAILUL
+    # # creez EMAILUL
 
-    model_Email = (
-        r"G:\Shared drives\Root\11. DATABASE\01. Automatizari avize\MODELE\BC\01.Mediu APM\Model email.docx")
+    # model_Email = (
+    #     r"G:\Shared drives\Root\11. DATABASE\01. Automatizari avize\MODELE\BC\01.Mediu APM\Model email.docx")
 
-    context_Email = {
-        'nume_client': y['client']['nume'],
-        'nr_cu': y['tblCU']['NrCU'],
-        'data_cu': x.get_date(y['tblCU']['DataCU']),
-        'emitent_cu': y['EmitentCU']['denumire_institutie'],
+    # context_Email = {
+    #     'nume_client': y['client']['nume'],
+    #     'nr_cu': y['tblCU']['NrCU'],
+    #     'data_cu': x.get_date(y['tblCU']['DataCU']),
+    #     'emitent_cu': y['EmitentCU']['denumire_institutie'],
 
-        'nume_lucrare': y['lucrare']['nume'],
-        'localitate_lucrare': y['lucrare']['localitate'],
-        'adresa_lucrare': y['lucrare']['adresa'],
-        'judet_lucrare': y['lucrare']['judet'],
+    #     'nume_lucrare': y['lucrare']['nume'],
+    #     'localitate_lucrare': y['lucrare']['localitate'],
+    #     'adresa_lucrare': y['lucrare']['adresa'],
+    #     'judet_lucrare': y['lucrare']['judet'],
 
-        'nume_client': y['client']['nume'],
-        'persoana_contact': y['contact']['nume'],
-        'telefon_contact': y['contact']['telefon'],
-    }
+    #     'nume_client': y['client']['nume'],
+    #     'persoana_contact': y['contact']['nume'],
+    #     'telefon_contact': y['contact']['telefon'],
+    # }
 
-    x.create_email(model_Email, context_Email, y['final_destination'])
+    # x.create_email(model_Email, context_Email, y['final_destination'])
 
-    # -----------------------------------------------------------------------------------------------
+    # # -----------------------------------------------------------------------------------------------
 
     # creez DOCUMENTUL FINAL
 
@@ -117,6 +117,7 @@ def aviz_APM(id_lucrare, path_final):
     # PUNEM PLANUL DE SITUATIE DETALIAT
     x.copy_file(y['tblCU']['CalePlanSituatiePDF'], path_final, director_final, 'Plan situatie.pdf')
     x.copy_file(y['tblCU']['CalePlanSituatieDWG'], path_final, director_final, 'Plan situatie.dwg')
+    x.copy_file("G:/Shared drives/Root/11. DATABASE/01. Automatizari avize/MODELE/BC/01.Mediu APM/Citeste-ma.docx", path_final, director_final, 'Citeste-ma.docx')
 
     # -----------------------------------------------------------------------------------------------
 
@@ -314,8 +315,8 @@ def aviz_GN_Delgaz(id_lucrare, path_final):
 
     context_email = {
         'nume_client': y['client']['nume'],
-        'nr_cu': y['tblCU']['nr_cu'],
-        'data_cu': y['tblCU']['data_cu'],
+        'nr_cu': y['tblCU']['NrCU'],
+        'data_cu': x.get_date(y['tblCU']['DataCU']),
         'emitent_cu': y['EmitentCU']['denumire_institutie'],
         'nume_lucrare': y['lucrare']['nume'],
         'localitate_lucrare': y['lucrare']['localitate'],
@@ -1638,3 +1639,174 @@ def aviz_CHIMCOMPLEX(id_lucrare, path_final):
     x.create_email(model_email, context_email, y['final_destination'])
 
     print("\nAvizul CHIMCOMPLX Borzești a fost creat \n")
+
+
+def aviz_CFR(id_lucrare, path_final):
+    director_final = '20. Aviz CFR'
+    y = x.get_data(path_final, director_final, id_lucrare)
+
+    # -----------------------------------------------------------------------------------------------
+
+    # creez CEREREA
+
+    model_cerere = (
+        'G:/Shared drives/Root/11. DATABASE/01. Automatizari avize/MODELE/BC/20. Aviz CFR/'f"Cerere aviz CFR{' - DELGAZ' if y['lucrare']['IDClient'] == 1 else ''}.docx")
+
+    context_cerere = {
+        # proiectare
+        'nume_firma_proiectare': y['firma_proiectare']['nume'],
+        'localitate_firma_proiectare': y['firma_proiectare']['localitate'],
+        'adresa_firma_proiectare': y['firma_proiectare']['adresa'],
+        'judet_firma_proiectare': y['firma_proiectare']['judet'],
+        'email_firma_proiectare': y['firma_proiectare']['email'],
+        'cui_firma_proiectare': y['firma_proiectare']['CUI'],
+        'nr_reg_com': y['firma_proiectare']['NrRegCom'],
+        'reprezentant_firma_proiectare': y['firma_proiectare']['reprezentant'],
+        'persoana_contact': y['contact']['nume'],
+        'telefon_contact': y['contact']['telefon'],
+        # client
+        'nume_client': y['client']['nume'],
+        'localitate_client': y['client']['localitate'],
+        'adresa_client': y['client']['adresa'],
+        'judet_client': y['client']['judet'],
+        # beneficiar
+        'nume_beneficiar': y['beneficiar']['nume'],
+        # lucrare
+        'nume_lucrare': y['lucrare']['nume'],
+        'localitate_lucrare': y['lucrare']['localitate'],
+        'adresa_lucrare': y['lucrare']['adresa'],
+        'judet_lucrare': y['lucrare']['judet'],
+        'nr_cu': y['tblCU']['NrCU'],
+        'data_cu': x.get_date(y['tblCU']['DataCU']),
+        'emitent_cu': y['EmitentCU']['denumire_institutie'],
+        # Data
+        'data': y['astazi'],
+    }
+
+    cerere_pdf_path = x.create_document(
+        model_cerere, context_cerere, y['final_destination'], y['firma_proiectare']['CaleStampila'].strip('"'))
+
+    path_document_final = os.path.join(
+        path_final, director_final, f"Documentatie aviz CFR - DE PRINTAT.pdf")
+
+    pdf_list = [
+        cerere_pdf_path,
+        y['tblCU']['CaleCU'].strip('"'),
+        y['tblCU']['CalePlanIncadrareCU'].strip('"'),
+        y['tblCU']['CalePlanIncadrareCU'].strip('"'),
+        y['tblCU']['CalePlanSituatieCU'].strip('"'),
+        y['tblCU']['CalePlanSituatieCU'].strip('"'),
+        y['tblCU']['CaleMemoriuTehnicSS'].strip('"'),
+        y['tblCU']['CaleActeFacturare'].strip('"'),
+    ]
+
+    x.merge_pdfs_print(pdf_list, path_document_final)
+
+    if os.path.exists(cerere_pdf_path):
+        os.remove(cerere_pdf_path)
+
+    print("\nAvizul CFR a fost creat \n")
+
+
+def aviz_TransGaz(id_lucrare, path_final):
+    director_final = '21.Aviz TransGaz - Bacau'
+    y = x.get_data(path_final, director_final, id_lucrare)
+
+    # -----------------------------------------------------------------------------------------------
+
+    # creez CEREREA
+
+    model_cerere = (
+        'G:/Shared drives/Root/11. DATABASE/01. Automatizari avize/MODELE/BC/21. Aviz TransGaz/'f"Cerere aviz TransGaz{' - DELGAZ' if y['lucrare']['IDClient'] == 1 else ''}.docx")
+
+    context_cerere = {
+        # proiectare
+
+        'nume_firma_proiectare': y['firma_proiectare']['nume'],
+        'localitate_firma_proiectare': y['firma_proiectare']['localitate'],
+        'adresa_firma_proiectare': y['firma_proiectare']['adresa'],
+        'judet_firma_proiectare': y['firma_proiectare']['judet'],
+        'email_firma_proiectare': y['firma_proiectare']['email'],
+        'cui_firma_proiectare': y['firma_proiectare']['CUI'],
+        'nr_reg_com': y['firma_proiectare']['NrRegCom'],
+        'reprezentant_firma_proiectare': y['firma_proiectare']['reprezentant'],
+        'persoana_contact': y['contact']['nume'],
+        'telefon_contact': y['contact']['telefon'],
+        # client
+        'nume_client': y['client']['nume'],
+        'localitate_client': y['client']['localitate'],
+        'adresa_client': y['client']['adresa'],
+        'judet_client': y['client']['judet'],
+        # beneficiar
+        'nume_beneficiar': y['beneficiar']['nume'],
+        # lucrare
+        'nume_lucrare': y['lucrare']['nume'],
+        'localitate_lucrare': y['lucrare']['localitate'],
+        'adresa_lucrare': y['lucrare']['adresa'],
+        'judet_lucrare': y['lucrare']['judet'],
+        'nr_cu': y['tblCU']['NrCU'],
+        'data_cu': x.get_date(y['tblCU']['DataCU']),
+        'emitent_cu': y['EmitentCU']['denumire_institutie'],
+        # Data
+        'data': y['astazi'],
+    }
+
+    cerere_pdf_path = x.create_document(
+        model_cerere, context_cerere, y['final_destination'], y['firma_proiectare']['CaleStampila'].strip('"'))
+
+    path_document_final = os.path.join(
+        path_final, director_final, f"Documentatie aviz TransGaz - {y['client']['nume']} conform CU {y['tblCU']['NrCU']} din {x.get_date(y['tblCU']['DataCU'])}.pdf")
+
+    pdf_list = [
+        cerere_pdf_path,
+        y['tblCU']['CaleCU'].strip('"'),
+        y['tblCU']['CalePlanIncadrareCU'].strip('"'),
+        y['tblCU']['CalePlanSituatieCU'].strip('"'),
+        y['tblCU']['CaleMemoriuTehnicSS'].strip('"'),
+        y['tblCU']['CaleActeFacturare'].strip('"'),
+    ]
+
+    x.merge_pdfs(pdf_list, path_document_final)
+
+    if os.path.exists(cerere_pdf_path):
+        os.remove(cerere_pdf_path)
+
+    # PUNEM PLANUL DE SITUATIE DETALIAT
+    x.copy_file(y['tblCU']['CalePlanSituatiePDF'], path_final,
+                director_final, 'Plan situatie.pdf')
+    x.copy_file(y['tblCU']['CalePlanSituatieDWG'], path_final,
+                director_final, 'Plan situatie.dwg')
+
+    # -----------------------------------------------------------------------------------------------
+
+    # creez EMAILUL
+
+    model_email = (
+        r"G:\Shared drives\Root\11. DATABASE\01. Automatizari avize\MODELE\NT\11. Aviz TransGaz\Model email.docx")
+    
+    facturare = x.facturare(id_lucrare)
+
+    context_email = {
+        'nume_client': y['client']['nume'],
+        'nr_cu': y['tblCU']['NrCU'],
+        'data_cu': x.get_date(y['tblCU']['DataCU']),
+        'emitent_cu': y['EmitentCU']['denumire_institutie'],
+        'nume_lucrare': y['lucrare']['nume'],
+        'localitate_lucrare': y['lucrare']['localitate'],
+        'adresa_lucrare': y['lucrare']['adresa'],
+        'judet_lucrare': y['lucrare']['judet'],
+        'nume_client': y['client']['nume'],
+        'persoana_contact': y['contact']['nume'],
+        'telefon_contact': y['contact']['telefon'],
+        'firma_facturare': facturare['firma_facturare'],
+        'cui_firma_facturare': facturare['cui_firma_facturare'],
+        
+
+    }
+
+    x.create_email(model_email, context_email, y['final_destination'])
+
+    print("\nAvizul TransGaz - Neamț a fost creat \n")
+
+def functie_noua():
+    pass

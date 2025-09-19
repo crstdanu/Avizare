@@ -1,9 +1,9 @@
 import avize_IS as depune_la_iasi
 
 
-id_lucrare = 17
+id_lucrare = 113
 
-path_final = r"G:\Shared drives\Root\11. DATABASE\Pentru Cosmin"
+path_final = r"G:\Shared drives\Root\11. DATABASE\Pentru CRISTI"
 
 
 
@@ -12,7 +12,7 @@ path_final = r"G:\Shared drives\Root\11. DATABASE\Pentru Cosmin"
 
 # depune_la_iasi.aviz_EE_Delgaz(id_lucrare, path_final)
 
-# depune_la_iasi.aviz_GN_Delgaz(id_lucrare, path_final)
+depune_la_iasi.aviz_GN_Delgaz(id_lucrare, path_final)
 
 # depune_la_iasi.aviz_Apavital(id_lucrare, path_final)
 
@@ -42,14 +42,20 @@ path_final = r"G:\Shared drives\Root\11. DATABASE\Pentru Cosmin"
 
 # depune_la_iasi.aviz_DSP(id_lucrare, path_final)
 
-depune_la_iasi.aviz_HCL(id_lucrare, path_final)
+# depune_la_iasi.aviz_HCL(id_lucrare, path_final)
 
 # depune_la_iasi.aviz_Evidenta_Patrimoniu(id_lucrare, path_final)
 
-# depune_la_iasi.aviz_PMI_GiS(id_lucrare, path_final)
+depune_la_iasi.aviz_PMI_GiS(id_lucrare, path_final)
 
-# depune_la_iasi.aviz_Nomenclatura(id_lucrare, path_final)
+depune_la_iasi.aviz_Nomenclatura(id_lucrare, path_final)
 
 # depune_la_iasi.aviz_OAR(id_lucrare, path_final)
 
 # depune_la_iasi.aviz_Cultura(id_lucrare, path_final)
+
+# depune_la_iasi.aviz_Salubritate_GIREXIM(id_lucrare, path_final)
+
+# depune_la_iasi.aviz_CFR(id_lucrare, path_final)
+
+# depune_la_iasi.aviz_Transelectrica(id_lucrare, path_final)

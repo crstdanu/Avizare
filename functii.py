@@ -1,9 +1,10 @@
 import pyodbc
 import os
-from docxtpl import DocxTemplate
+from docxtpl import DocxTemplate, InlineImage
+from docx.shared import Cm, Inches, Mm, Emu
 from datetime import datetime as dt
 import win32com.client as win32
-from PyPDF2 import PdfMerger
+from PyPDF2 import PdfMerger, PdfReader, PdfWriter
 import PyPDF2
 import shutil
 import openpyxl
@@ -12,6 +13,7 @@ from openpyxl.styles import Border, Side, PatternFill, Alignment
 from openpyxl.drawing.image import Image
 from dateutil.relativedelta import relativedelta
 import math
+import time
 
 
 pagina_goala = "G:/Shared drives/Root/11. DATABASE/01. Automatizari avize/DOCUMENTE/pagina_goala.pdf"
@@ -148,7 +150,7 @@ def get_CU(cursor, id_lucrare):
         'CaleATR': fetch_single_value(cursor, 'SELECT CaleATR FROM tblCU WHERE ID_Lucrare = ?', (id_lucrare,)),
         'CaleAvizCTE': fetch_single_value(cursor, 'SELECT CaleAvizCTE FROM tblCU WHERE ID_Lucrare = ?', (id_lucrare,)),
         'CaleChitantaDSP': fetch_single_value(cursor, 'SELECT CaleChitantaDSP FROM tblCU WHERE ID_Lucrare = ?', (id_lucrare,)),
-
+        'CaleChitantaPolitie': fetch_single_value(cursor, 'SELECT CaleChitantaPolitie FROM tblCU WHERE ID_Lucrare = ?', (id_lucrare,)),
     }
 
 
@@ -435,6 +437,8 @@ def create_document(model_path, context, final_destination, stampila_path=None):
     if os.path.exists(path_doc):
         os.remove(path_doc)
     return cerere_pdf_path
+
+
 
 
 def create_email(model_path, context, final_destination):
@@ -1010,11 +1014,12 @@ def aduna_luni(date_obj, luni: int):
     return formatted_date
 
 
-def custom_round(value):
+def custom_round(value_1):
+    value = value_1 * 0.01
     return math.ceil(value) if value % 1 >= 0.5 else math.floor(value)
 
 def diferenta_taxa(taxa_ac, taxa_reala):
-    if taxa_ac >= taxa_reala:
+    if round(taxa_ac) >= round(taxa_reala):
         diferenta_taxa = "-"
     else:
         diferenta_taxa = taxa_reala - taxa_ac
@@ -1025,3 +1030,53 @@ def diferenta_taxa(taxa_ac, taxa_reala):
         rezultat = f"{diferenta_taxa:.2f}"
 
     return rezultat
+
+def calculeaza_taxa_reala(valoare_reala, valoare_ac):
+    if round(valoare_reala) == round(valoare_ac):
+        rezultat = "-"
+    else:
+        # Taxa este 1% din valoarea reală (0.01 * valoare_reala)
+        taxa = valoare_reala * 0.01
+        # Rotunjim taxa folosind custom_round
+        taxa_rotunjita = custom_round(valoare_reala)
+        # Formatam rezultatul cu două zecimale
+        rezultat = f"{taxa_rotunjita:.2f}"
+    return rezultat
+
+
+def recreate_pdf(input_path, output_path):
+    """
+    Recreează un fișier PDF pentru a elimina semnătura electronică.
+    """
+    reader = PdfReader(input_path)
+    writer = PdfWriter()
+
+    for page in reader.pages:
+        writer.add_page(page)
+
+    with open(output_path, "wb") as output_file:
+        writer.write(output_file)
+
+def merge_pdfs_signed(pdf_list, output_path):
+    """
+    Combină fișierele PDF, recreând fișierele semnate electronic dacă este necesar.
+    """
+    merger = PdfMerger()
+
+    for pdf in pdf_list:
+        try:
+            # Verificăm dacă fișierul este semnat sau are restricții
+            reader = PdfReader(pdf)
+            if reader.is_encrypted:
+                print(f"Fișierul {pdf} este semnat electronic. Se recreează...")
+                temp_pdf = pdf.replace(".pdf", "_recreated.pdf")
+                recreate_pdf(pdf, temp_pdf)
+                merger.append(temp_pdf)
+                # Ștergem fișierul temporar după utilizare
+                os.remove(temp_pdf)
+            else:
+                merger.append(pdf)
+        except Exception as e:
+            print(f"Eroare la procesarea fișierului {pdf}: {e}")
+    merger.write(output_path)
+    merger.close()

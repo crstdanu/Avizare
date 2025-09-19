@@ -365,15 +365,26 @@ def declaratie_ITL(id_lucrare, path_final):
     director_final = '01. Declaratie ITL'
     cale_stampila = "G:/Shared drives/Root/11. DATABASE/01. Automatizari avize/DOCUMENTE/Stampila - RGT.png"
     y = x.get_data_finalizare(path_final, director_final, id_lucrare)
+    valoare_reala = float(y['tblFinalizare']['ValoareReala'])
 
 
     model_cerere = ('G:/Shared drives/Root/11. DATABASE/01. Automatizari avize/Executie/03.Pentru finalizare/01. Anunt ITL/'f"ITL-064 - Iasi{' - DELGAZ' if y['lucrare']['IDClient'] == 1 else ''}.docx")
  
     expirare_executie = x.aduna_luni(y['tblIncepereExecutie']['DataIncepereExecutie'], int(y['tblIncepereExecutie']['ValabilitateExecutie']))
-    valoare_reala = float(y['tblFinalizare']['ValoareReala'])  # fara proiectare    
-    taxa_ac = x.custom_round(float(y['tblIncepereExecutie']['ValoareAC']) * 0.01)
-    taxa_reala = x.custom_round(valoare_reala * 0.01)
-    diferenta_taxa = x.diferenta_taxa(taxa_ac, taxa_reala)
+    valoare_ac = float(y['tblIncepereExecutie']['ValoareAC'])
+    
+    # custom_round deja înmulțește cu 0.01 intern, deci nu mai înmulțim aici
+    taxa_ac = x.custom_round(valoare_ac)
+    taxa_reala_valoare = x.custom_round(valoare_reala)
+    
+    # Calculează diferenta_taxa și taxa_reala conform cerințelor
+    if valoare_reala > valoare_ac:
+        diferenta_taxa = f"{taxa_reala_valoare - taxa_ac:.2f}"
+        taxa_reala = f"{taxa_reala_valoare:.2f}"
+    else:
+        diferenta_taxa = "-"
+        taxa_reala = "-"
+
 
     context_cerere = {
         'nume_client': y['client']['nume'],
@@ -385,7 +396,7 @@ def declaratie_ITL(id_lucrare, path_final):
         'emitent_ac': y['EmitentAC']['denumire_institutie'],
         'expirare_executie': expirare_executie,
         'valoare_reala': f"{valoare_reala:.2f}",
-        'taxa_reala': f"{taxa_reala:.2f}",
+        'taxa_reala': taxa_reala,
         'taxa_ac': f"{taxa_ac:.2f}", 
         'diferenta_taxa': diferenta_taxa,
         # Data
@@ -561,7 +572,7 @@ def anunt_UAT_declaratie_ITL(id_lucrare, path_final):
     director_final = '01. Anunt UAT + ITL - Finalizare'
     cale_stampila = "G:/Shared drives/Root/11. DATABASE/01. Automatizari avize/DOCUMENTE/Stampila - RGT.png"
     y = x.get_data_finalizare(path_final, director_final, id_lucrare)
-    valoare_reala = float(y['tblFinalizare']['ValoareReala'])   # valoarea fara executie
+    valoare_reala = float(y['tblFinalizare']['ValoareReala'])   # valoarea fara proiectare
 
 
     ## -------------------------------------------- Anunt UAT ------------------------------------------ ##
@@ -619,9 +630,19 @@ def anunt_UAT_declaratie_ITL(id_lucrare, path_final):
 
 
     expirare_executie = x.aduna_luni(y['tblIncepereExecutie']['DataIncepereExecutie'], int(y['tblIncepereExecutie']['ValabilitateExecutie']))
-    taxa_ac = x.custom_round(float(y['tblIncepereExecutie']['ValoareAC']) * 0.01)
-    taxa_reala = x.custom_round(valoare_reala * 0.01)
-    diferenta_taxa = x.diferenta_taxa(taxa_ac, taxa_reala)
+    valoare_ac = float(y['tblIncepereExecutie']['ValoareAC'])
+    
+    # custom_round deja înmulțește cu 0.01 intern, deci nu mai înmulțim aici
+    taxa_ac = x.custom_round(valoare_ac)
+    taxa_reala_valoare = x.custom_round(valoare_reala)
+    
+    # Calculează diferenta_taxa și taxa_reala conform cerințelor
+    if valoare_reala > valoare_ac:
+        diferenta_taxa = f"{taxa_reala_valoare - taxa_ac:.2f}"
+        taxa_reala = f"{taxa_reala_valoare:.2f}"
+    else:
+        diferenta_taxa = "-"
+        taxa_reala = "-"
 
 
     context_declaratie_itl = {
@@ -635,7 +656,7 @@ def anunt_UAT_declaratie_ITL(id_lucrare, path_final):
         'expirare_executie': expirare_executie,
 
         'valoare_reala': f"{valoare_reala:.2f}",
-        'taxa_reala': f"{taxa_reala:.2f}",
+        'taxa_reala': taxa_reala,
         'taxa_ac': f"{taxa_ac:.2f}", 
         'diferenta_taxa': diferenta_taxa,
         # Data
@@ -767,3 +788,229 @@ def anunt_UAT_declaratie_ITL(id_lucrare, path_final):
 
     print("\n Anuntul UAT + ITL a fost creat \n")
 
+
+def anunt_UAT_provincie(id_lucrare, path_final):
+    director_final = '03. Anunt UAT - PROVINCIE - Finalizare'
+    cale_stampila = "G:/Shared drives/Root/11. DATABASE/01. Automatizari avize/DOCUMENTE/Stampila - RGT.png"
+    y = x.get_data_finalizare(path_final, director_final, id_lucrare)
+    valoare_reala = float(y['tblFinalizare']['ValoareReala'])   # valoarea fara proiectare
+
+    model_cerere_uat = ('G:/Shared drives/Root/11. DATABASE/01. Automatizari avize/Executie/03.Pentru finalizare/02. Anunt UAT/'f"Anunt UAT{' - DELGAZ' if y['lucrare']['IDClient'] == 1 else ''}.docx")
+    
+    context_cerere_uat = {
+        'emitent_ac': y['EmitentAC']['denumire_institutie'].upper(),
+
+        'nume_client': y['client']['nume'],
+
+        'nume_firma_executie': y['firma_executie']['nume'],
+        'nr_reg_com': y['firma_executie']['NrRegCom'],
+        'cui_firma_executie': y['firma_executie']['CUI'],
+        'localitate_firma_executie': y['firma_executie']['localitate'],
+        'adresa_firma_executie': y['firma_executie']['adresa'],
+        'judet_firma_executie': y['firma_executie']['judet'],
+        'repr_firma_executie': y['firma_executie']['reprezentant'],
+        'serie_ci': y['firma_executie']['seria_CI'],
+        'nr_ci': y['firma_executie']['nr_CI'],
+        'cnp_repr': y['firma_executie']['cnp_repr'],
+        'telefon_contact': y['contact']['telefon'],
+        'email_firma_executie': y['firma_executie']['email'],
+
+        'nr_ac': y['tblIncepereExecutie']['NumarAC'],
+        'data_ac': x.get_date(y['tblIncepereExecutie']['DataAC']),
+
+        'data_finalizare': x.get_date(y['tblFinalizare']['DataFinalizare']),
+
+        'nume_lucrare': y['lucrare']['nume'],
+
+        'valoare_reala': f"{valoare_reala:.2f}",
+        # Data
+        'data': y['astazi'],
+    }
+
+    cerere_pdf_path = x.create_document(model_cerere_uat, context_cerere_uat, y['final_destination'], cale_stampila)
+    path_document_final = os.path.join(path_final, director_final, f"Anunț UAT - Finalizare lucrări - {y['client']['nume']}.pdf")
+
+    pdf_list = [
+        cerere_pdf_path,
+        y['firma_executie']['CaleCertificat'].strip('"'),
+        y['firma_executie']['CaleCI'].strip('"'),
+        y['tblIncepereExecutie']['CaleACScanat'].strip('"'),
+        y['tblIncepereExecutie']['CalePlanIncadrareACScanat'].strip('"'),
+        y['tblIncepereExecutie']['CalePlanSituatieACScanat'].strip('"'),
+        y['tblIncepereExecutie']['CaleMemoriuTehnicACScanat'].strip('"'),
+    ]
+
+    if y['tblFinalizare']['CaleImputernicireDelgaz']:
+        pdf_list.insert(2, y['tblFinalizare']['CaleImputernicireDelgaz'].strip('"'))
+
+    if y['tblFinalizare']['CaleAdeverintaISC']:
+        pdf_list.append(y['tblFinalizare']['CaleAdeverintaISC'].strip('"'))
+    if y['tblFinalizare']['CaleITL']:
+        pdf_list.append(y['tblFinalizare']['CaleITL'].strip('"'))
+    if y['tblFinalizare']['CaleDovadaRegularizareTaxaAC']:
+        pdf_list.append(y['tblFinalizare']['CaleDovadaRegularizareTaxaAC'].strip('"'))
+    ### --------------------------- doar cand avem Dispozitie de santier --------------------------------------------- ###
+    if y['tblFinalizare']['CaleDispozitieSantier']:
+        pdf_list.insert(-1, y['tblFinalizare']['CaleDispozitieSantier'].strip('"'))
+    if y['tblFinalizare']['CalePlanIncadrareDS']:
+        pdf_list.insert(-1, y['tblFinalizare']['CalePlanIncadrareDS'].strip('"'))
+    if y['tblFinalizare']['CalePlanSituatieDS']:
+        pdf_list.insert(-1, y['tblFinalizare']['CalePlanSituatieDS'].strip('"'))
+    if y['tblFinalizare']['CaleRaspunsUatDS']:
+        pdf_list.insert(-1, y['tblFinalizare']['CaleRaspunsUatDS'].strip('"'))
+    ### ----------------------------------------------------------------------------------------------------------------####
+    if y['tblFinalizare']['CaleReferatDS']:
+        pdf_list.append(y['tblFinalizare']['CaleReferatDS'].strip('"'))
+    if y['tblFinalizare']['CaleRaportProiectant']:
+        pdf_list.append(y['tblFinalizare']['CaleRaportProiectant'].strip('"'))
+
+    x.merge_pdfs_print(pdf_list, path_document_final)
+
+    if os.path.exists(cerere_pdf_path):
+        os.remove(cerere_pdf_path)
+
+        ### ----------------------------------------------------------- creez EMAILUL  --------------------------------------------------####
+
+    model_email = (r"G:\Shared drives\Root\11. DATABASE\01. Automatizari avize\Executie\03.Pentru finalizare\02. Anunt UAT\Model email - Anunt UAT.docx")
+
+    context_email = {
+        'nume_client': y['client']['nume'],
+        'email_uat': y['EmitentAC']['email'],
+        'nr_ac': y['tblIncepereExecutie']['NumarAC'],
+        'data_ac': x.get_date(y['tblIncepereExecutie']['DataAC']),
+        'nume_lucrare': y['lucrare']['nume'],
+        'nume_client': y['client']['nume'],
+        'persoana_contact': y['contact']['nume'],
+        'telefon_contact': y['contact']['telefon'],
+    }
+
+    x.create_email(model_email, context_email, y['final_destination'])
+
+    print("\n Anuntul UAT PROVINCIE a fost creat \n")
+
+
+
+def declaratie_ITL_provincie(id_lucrare, path_final):
+    director_final = '03. Declaratie ITL - PROVINCIE'
+    cale_stampila = "G:/Shared drives/Root/11. DATABASE/01. Automatizari avize/DOCUMENTE/Stampila - RGT.png"
+    y = x.get_data_finalizare(path_final, director_final, id_lucrare)
+    valoare_reala = float(y['tblFinalizare']['ValoareReala'])   # valoarea fara proiectare
+
+    if y['tblCU']['EmitentCU'] == 2:
+        model_declaratie_itl = ('G:/Shared drives/Root/11. DATABASE/01. Automatizari avize/Executie/03.Pentru finalizare/01. Anunt ITL/'f"ITL-064 - Tomesti{' - DELGAZ' if y['lucrare']['IDClient'] == 1 else ''}.docx")
+    elif y['tblCU']['EmitentCU'] == 3:
+        model_declaratie_itl = ('G:/Shared drives/Root/11. DATABASE/01. Automatizari avize/Executie/03.Pentru finalizare/01. Anunt ITL/'f"ITL-064 - Miroslava{' - DELGAZ' if y['lucrare']['IDClient'] == 1 else ''}.docx")
+    elif y['tblCU']['EmitentCU'] == 7:
+        model_declaratie_itl = ('G:/Shared drives/Root/11. DATABASE/01. Automatizari avize/Executie/03.Pentru finalizare/01. Anunt ITL/'f"ITL-064 - Barnova{' - DELGAZ' if y['lucrare']['IDClient'] == 1 else ''}.docx")
+    elif y['tblCU']['EmitentCU'] == 15:
+        model_declaratie_itl = ('G:/Shared drives/Root/11. DATABASE/01. Automatizari avize/Executie/03.Pentru finalizare/01. Anunt ITL/'f"ITL-064 - Vama Suceava{' - DELGAZ' if y['lucrare']['IDClient'] == 1 else ''}.docx")
+    elif y['tblCU']['EmitentCU'] == 14:
+        model_declaratie_itl = ('G:/Shared drives/Root/11. DATABASE/01. Automatizari avize/Executie/03.Pentru finalizare/01. Anunt ITL/'f"ITL-064 - Ciurea{' - DELGAZ' if y['lucrare']['IDClient'] == 1 else ''}.docx")
+    else:
+        print("NU am model de cerere ITL pentru aceastra localitate")
+
+    expirare_executie = x.aduna_luni(y['tblIncepereExecutie']['DataIncepereExecutie'], int(y['tblIncepereExecutie']['ValabilitateExecutie']))
+    valoare_ac = float(y['tblIncepereExecutie']['ValoareAC'])
+    
+    # custom_round deja înmulțește cu 0.01 intern, deci nu mai înmulțim aici
+    taxa_ac = x.custom_round(valoare_ac)
+    taxa_reala_valoare = x.custom_round(valoare_reala)
+    
+    # Calculează diferenta_taxa și taxa_reala conform cerințelor
+    if valoare_reala > valoare_ac:
+        diferenta_taxa = f"{taxa_reala_valoare - taxa_ac:.2f}"
+        taxa_reala = f"{taxa_reala_valoare:.2f}"
+    else:
+        diferenta_taxa = "-"
+        taxa_reala = "-"
+
+    context_declaratie_itl = {
+        'nume_client': y['client']['nume'],
+        'nume_firma_executie': y['firma_executie']['nume'],
+        'nume_manager_proiect': y['manager_proiect']['nume'].upper(),
+        'nr_ac': y['tblIncepereExecutie']['NumarAC'],
+        'data_ac': x.get_date(y['tblIncepereExecutie']['DataAC']),
+        'valoare_ac': f"{y['tblIncepereExecutie']['ValoareAC']:.2f}",
+        'emitent_ac': y['EmitentAC']['denumire_institutie'],
+        'expirare_executie': expirare_executie,
+
+        'valoare_reala': f"{valoare_reala:.2f}",
+        'taxa_reala': taxa_reala,
+        'taxa_ac': f"{taxa_ac:.2f}", 
+        'diferenta_taxa': diferenta_taxa,
+        # Data
+        'data': y['astazi'],
+    }
+
+    declaratie_itl_pdf_path = x.create_document(model_declaratie_itl, context_declaratie_itl, y['final_destination'], cale_stampila)
+    path_document_final = os.path.join(path_final, director_final, f"Declaratie ITL - Finalizare lucrări - {y['client']['nume']}.pdf")
+
+
+    pdf_list = [
+        declaratie_itl_pdf_path,
+        y['firma_executie']['CaleCertificat'].strip('"'),
+        y['firma_executie']['CaleCI'].strip('"'),
+
+        y['tblIncepereExecutie']['CaleACScanat'].strip('"'),
+        y['tblIncepereExecutie']['CalePlanIncadrareACScanat'].strip('"'),
+        y['tblIncepereExecutie']['CalePlanSituatieACScanat'].strip('"'),
+        y['tblIncepereExecutie']['CaleMemoriuTehnicACScanat'].strip('"'),
+
+        y['tblIncepereExecutie']['CaleContractRacordare'].strip('"'),
+        y['tblIncepereExecutie']['CaleContractExecutie'].strip('"'),
+        y['tblFinalizare']['CaleDevizFinal'].strip('"'),
+
+        y['tblFinalizare']['CaleReferatDS'].strip('"'),
+        y['tblFinalizare']['CaleRaportProiectant'].strip('"'),
+        
+    ]
+
+    if y['tblFinalizare']['CaleImputernicireDelgaz']:
+        pdf_list.insert(1, y['tblFinalizare']['CaleImputernicireDelgaz'].strip('"'))
+    ### --------------------------- doar cand avem Dispozitie de santier --------------------------------------------- ###
+    if y['tblFinalizare']['CaleDispozitieSantier']:
+        pdf_list.insert(-1, y['tblFinalizare']['CaleDispozitieSantier'].strip('"'))
+    if y['tblFinalizare']['CalePlanIncadrareDS']:
+        pdf_list.insert(-1, y['tblFinalizare']['CalePlanIncadrareDS'].strip('"'))
+    if y['tblFinalizare']['CalePlanSituatieDS']:
+        pdf_list.insert(-1, y['tblFinalizare']['CalePlanSituatieDS'].strip('"'))
+    if y['tblFinalizare']['CaleRaspunsUatDS']:
+        pdf_list.insert(-1, y['tblFinalizare']['CaleRaspunsUatDS'].strip('"'))
+    ### ----------------------------------------------------------------------------------------------------------------####
+
+    if y['tblIncepereExecutie']['CaleDovadaPlataAC']:
+        pdf_list.append(y['tblIncepereExecutie']['CaleDovadaPlataAC'].strip('"'))
+    if y['tblIncepereExecutie']['CaleDovadaPlataISC']:
+        pdf_list.append(y['tblIncepereExecutie']['CaleDovadaPlataISC'].strip('"'))
+
+    if y['tblFinalizare']['CaleFacturiRGT']:
+        pdf_list.append(y['tblFinalizare']['CaleFacturiRGT'].strip('"'))
+    if y['tblFinalizare']['CaleDovadaPlataFacturi']:
+        pdf_list.append(y['tblFinalizare']['CaleDovadaPlataFacturi'].strip('"'))
+
+
+    x.merge_pdfs(pdf_list, path_document_final)
+
+    if os.path.exists(declaratie_itl_pdf_path):
+        os.remove(declaratie_itl_pdf_path)
+
+    ### ----------------------------------------------------------- creez EMAILUL  --------------------------------------------------####
+
+    model_email = (r"G:\Shared drives\Root\11. DATABASE\01. Automatizari avize\Executie\03.Pentru finalizare\01. Anunt ITL\Model email - Declaratie ITL.docx")
+
+    context_email = {
+        'nume_client': y['client']['nume'],
+        'email_uat': y['EmitentAC']['email'],
+        'nr_ac': y['tblIncepereExecutie']['NumarAC'],
+        'data_ac': x.get_date(y['tblIncepereExecutie']['DataAC']),
+        'nume_lucrare': y['lucrare']['nume'],
+        'nume_client': y['client']['nume'],
+        'persoana_contact': y['contact']['nume'],
+        'telefon_contact': y['contact']['telefon'],
+    }
+
+    x.create_email(model_email, context_email, y['final_destination'])
+
+
+
+    print("\n Declaratia ITL PROVINCIE a fost creată \n")

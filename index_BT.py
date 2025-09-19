@@ -3,10 +3,9 @@ import avize_BT as depune_la_botosani
 
 
 
-id_lucrare = 49
+id_lucrare = 76
 
-path_final = r"G:\Shared drives\Root\11. DATABASE\Pentru Dima"
-
+path_final = r"G:\Shared drives\Root\11. DATABASE\Pentru Vika"
  
 
 # depune_la_botosani.aviz_APM(id_lucrare, path_final)
@@ -21,4 +20,10 @@ path_final = r"G:\Shared drives\Root\11. DATABASE\Pentru Dima"
 
 # depune_la_botosani.aviz_SGA(id_lucrare, path_final)
 
-# depune_la_botosani.aviz_OAR(id_lucrare, path_final)
+# # depune_la_botosani.aviz_OAR(id_lucrare, path_final)
+
+# depune_la_botosani.aviz_Nova_Apaserv(id_lucrare, path_final)
+
+depune_la_botosani.aviz_Cultura(id_lucrare, path_final)
+
+# depune_la_botosani.aviz_Biroul_Rutier(id_lucrare, path_final)
