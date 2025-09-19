@@ -366,10 +366,12 @@ def declaratie_ITL(id_lucrare, path_final):
     cale_stampila = "G:/Shared drives/Root/11. DATABASE/01. Automatizari avize/DOCUMENTE/Stampila - RGT.png"
     y = x.get_data_finalizare(path_final, director_final, id_lucrare)
     valoare_reala = float(y['tblFinalizare']['ValoareReala'])
+    valoare_reala = float(y['tblFinalizare']['ValoareReala'])
 
 
     model_cerere = ('G:/Shared drives/Root/11. DATABASE/01. Automatizari avize/Executie/03.Pentru finalizare/01. Anunt ITL/'f"ITL-064 - Iasi{' - DELGAZ' if y['lucrare']['IDClient'] == 1 else ''}.docx")
  
+    
     expirare_executie = x.aduna_luni(y['tblIncepereExecutie']['DataIncepereExecutie'], int(y['tblIncepereExecutie']['ValabilitateExecutie']))
     valoare_ac = float(y['tblIncepereExecutie']['ValoareAC'])
     
@@ -396,6 +398,7 @@ def declaratie_ITL(id_lucrare, path_final):
         'emitent_ac': y['EmitentAC']['denumire_institutie'],
         'expirare_executie': expirare_executie,
         'valoare_reala': f"{valoare_reala:.2f}",
+        'taxa_reala': taxa_reala,
         'taxa_reala': taxa_reala,
         'taxa_ac': f"{taxa_ac:.2f}", 
         'diferenta_taxa': diferenta_taxa,
@@ -573,6 +576,7 @@ def anunt_UAT_declaratie_ITL(id_lucrare, path_final):
     cale_stampila = "G:/Shared drives/Root/11. DATABASE/01. Automatizari avize/DOCUMENTE/Stampila - RGT.png"
     y = x.get_data_finalizare(path_final, director_final, id_lucrare)
     valoare_reala = float(y['tblFinalizare']['ValoareReala'])   # valoarea fara proiectare
+    valoare_reala = float(y['tblFinalizare']['ValoareReala'])   # valoarea fara proiectare
 
 
     ## -------------------------------------------- Anunt UAT ------------------------------------------ ##
@@ -656,6 +660,7 @@ def anunt_UAT_declaratie_ITL(id_lucrare, path_final):
         'expirare_executie': expirare_executie,
 
         'valoare_reala': f"{valoare_reala:.2f}",
+        'taxa_reala': taxa_reala,
         'taxa_reala': taxa_reala,
         'taxa_ac': f"{taxa_ac:.2f}", 
         'diferenta_taxa': diferenta_taxa,

@@ -5,6 +5,7 @@ from docx.shared import Cm, Inches, Mm, Emu
 from datetime import datetime as dt
 import win32com.client as win32
 from PyPDF2 import PdfMerger, PdfReader, PdfWriter
+from PyPDF2 import PdfMerger, PdfReader, PdfWriter
 import PyPDF2
 import shutil
 import openpyxl
@@ -150,6 +151,7 @@ def get_CU(cursor, id_lucrare):
         'CaleATR': fetch_single_value(cursor, 'SELECT CaleATR FROM tblCU WHERE ID_Lucrare = ?', (id_lucrare,)),
         'CaleAvizCTE': fetch_single_value(cursor, 'SELECT CaleAvizCTE FROM tblCU WHERE ID_Lucrare = ?', (id_lucrare,)),
         'CaleChitantaDSP': fetch_single_value(cursor, 'SELECT CaleChitantaDSP FROM tblCU WHERE ID_Lucrare = ?', (id_lucrare,)),
+        'CaleChitantaPolitie': fetch_single_value(cursor, 'SELECT CaleChitantaPolitie FROM tblCU WHERE ID_Lucrare = ?', (id_lucrare,)),
         'CaleChitantaPolitie': fetch_single_value(cursor, 'SELECT CaleChitantaPolitie FROM tblCU WHERE ID_Lucrare = ?', (id_lucrare,)),
     }
 
@@ -1016,9 +1018,12 @@ def aduna_luni(date_obj, luni: int):
 
 def custom_round(value_1):
     value = value_1 * 0.01
+def custom_round(value_1):
+    value = value_1 * 0.01
     return math.ceil(value) if value % 1 >= 0.5 else math.floor(value)
 
 def diferenta_taxa(taxa_ac, taxa_reala):
+    if round(taxa_ac) >= round(taxa_reala):
     if round(taxa_ac) >= round(taxa_reala):
         diferenta_taxa = "-"
     else:

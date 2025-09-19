@@ -43,9 +43,11 @@ depune_la_iasi.aviz_GN_Delgaz(id_lucrare, path_final)
 # depune_la_iasi.aviz_DSP(id_lucrare, path_final)
 
 # depune_la_iasi.aviz_HCL(id_lucrare, path_final)
+# depune_la_iasi.aviz_HCL(id_lucrare, path_final)
 
 # depune_la_iasi.aviz_Evidenta_Patrimoniu(id_lucrare, path_final)
 
+depune_la_iasi.aviz_PMI_GiS(id_lucrare, path_final)
 depune_la_iasi.aviz_PMI_GiS(id_lucrare, path_final)
 
 depune_la_iasi.aviz_Nomenclatura(id_lucrare, path_final)
