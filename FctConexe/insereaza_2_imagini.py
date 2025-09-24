@@ -6,7 +6,7 @@ from docx.shared import Cm, Inches, Mm, Emu
 # change path to current working directory
 os.chdir(sys.path[0])
 
-doc = DocxTemplate(r"C:\Proiect\RoGoTehnic\StudiiFezabilitate\Avize_refactor\modele_cereri\Cerere NOUA TransGaz.docx")
+doc = DocxTemplate(r"C:\Proiect\RoGoTehnic\StudiiFezabilitate\Avize_refactor\modele_cereri\Cerere Natura 2000.docx")
 placeholder_1 = InlineImage(
     doc, 'Placeholders/Placeholder_1.png', width=Mm(30), height=Mm(30))
 placeholder_2 = InlineImage(
@@ -20,4 +20,4 @@ context = {
 
 
 doc.render(context)
-doc.save(r"C:\Proiect\RoGoTehnic\StudiiFezabilitate\Avize_refactor\modele_cereri\01. iasi\Cerere NOUA TransGaz.docx")
+doc.save(r"C:\Proiect\RoGoTehnic\StudiiFezabilitate\Avize_refactor\modele_cereri\05. suceava\15. Natura 2000 - Suceava\Cerere Natura 2000.docx")

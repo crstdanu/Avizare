@@ -5,7 +5,6 @@ from docx.shared import Cm, Inches, Mm, Emu
 from datetime import datetime as dt
 import win32com.client as win32
 from PyPDF2 import PdfMerger, PdfReader, PdfWriter
-from PyPDF2 import PdfMerger, PdfReader, PdfWriter
 import PyPDF2
 import shutil
 import openpyxl
@@ -17,7 +16,7 @@ import math
 import time
 
 
-pagina_goala = "G:/Shared drives/Root/11. DATABASE/01. Automatizari avize/DOCUMENTE/pagina_goala.pdf"
+pagina_goala = os.path.join(os.path.dirname(__file__), 'DOCUMENTE', 'pagina_goala.pdf')
 
 
 def xlsx_to_pdf(excel_file):
@@ -41,10 +40,18 @@ def count_pages(pdf_path):
 def convert_to_pdf(doc):
     word = win32.DispatchEx("Word.Application")
     new_name = doc.replace(".docx", r".pdf")
-    worddoc = word.Documents.Open(doc)
-    worddoc.SaveAs(new_name, FileFormat=17)
-    worddoc.Close()
-    return new_name
+    try:
+        word.Visible = False
+        worddoc = word.Documents.Open(doc)
+        worddoc.SaveAs(new_name, FileFormat=17)
+        worddoc.Close()
+        return new_name
+    finally:
+        # Ensure Word process is terminated to avoid file locks
+        try:
+            word.Quit()
+        except Exception:
+            pass
 
 
 def get_today_date():
@@ -428,13 +435,26 @@ def get_Contact(cursor, id_contact):
 
 def create_document(model_path, context, final_destination, stampila_path=None):
     doc = DocxTemplate(model_path)
+    # Try both strategies: replace an embedded picture placeholder and/or use InlineImage via a {{stampila}} variable
     if stampila_path:
-        doc.replace_pic("Placeholder_1.png", stampila_path)
+        # 1) Attempt to replace an embedded placeholder image if present in the template
+        try:
+            doc.replace_pic("Placeholder_1.png", stampila_path)
+        except Exception:
+            # If the placeholder image doesn't exist, ignore and rely on InlineImage
+            pass
+        # 2) Also provide InlineImage in context for templates using {{stampila}}
+        try:
+            context = dict(context)  # avoid mutating caller's dict
+            context.setdefault('stampila', InlineImage(doc, stampila_path, width=Mm(40)))
+        except Exception:
+            pass
     doc.render(context)
-    nume = os.path.basename(model_path).strip('.docx')
-    path_doc = os.path.join(
-        final_destination, f'{nume}.docx')
+    nume, _ = os.path.splitext(os.path.basename(model_path))
+    path_doc = os.path.join(final_destination, f'{nume}.docx')
     doc.save(path_doc)
+    # Small delay to avoid file syncing/locking races on network drives
+    time.sleep(1)
     cerere_pdf_path = convert_to_pdf(path_doc)
     if os.path.exists(path_doc):
         os.remove(path_doc)
@@ -1018,35 +1038,21 @@ def aduna_luni(date_obj, luni: int):
 
 def custom_round(value_1):
     value = value_1 * 0.01
-def custom_round(value_1):
-    value = value_1 * 0.01
     return math.ceil(value) if value % 1 >= 0.5 else math.floor(value)
 
 def diferenta_taxa(taxa_ac, taxa_reala):
+    # If taxa AC is greater or equal, no difference is owed
     if round(taxa_ac) >= round(taxa_reala):
-    if round(taxa_ac) >= round(taxa_reala):
-        diferenta_taxa = "-"
-    else:
-        diferenta_taxa = taxa_reala - taxa_ac
-
-    if isinstance(diferenta_taxa, str):
-        rezultat = diferenta_taxa
-    else:
-        rezultat = f"{diferenta_taxa:.2f}"
-
-    return rezultat
+        return "-"
+    diferenta = taxa_reala - taxa_ac
+    return f"{diferenta:.2f}"
 
 def calculeaza_taxa_reala(valoare_reala, valoare_ac):
-    if round(valoare_reala) == round(valoare_ac):
-        rezultat = "-"
-    else:
-        # Taxa este 1% din valoarea reală (0.01 * valoare_reala)
-        taxa = valoare_reala * 0.01
-        # Rotunjim taxa folosind custom_round
-        taxa_rotunjita = custom_round(valoare_reala)
-        # Formatam rezultatul cu două zecimale
-        rezultat = f"{taxa_rotunjita:.2f}"
-    return rezultat
+    # Afișează taxa doar dacă valoarea reală este mai mare decât valoarea AC; altfel "-"
+    if round(valoare_reala) <= round(valoare_ac):
+        return "-"
+    taxa_rotunjita = custom_round(valoare_reala)
+    return f"{taxa_rotunjita:.2f}"
 
 
 def recreate_pdf(input_path, output_path):
